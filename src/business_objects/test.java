@@ -5,9 +5,9 @@ import java.sql.Connection;
 public class test {
 
 	public static void main(String[] args) {
-		MetabaseHandler mbHandler = new MetabaseHandler();
-		Connection connection = mbHandler.OpenConnection("10.0.3.50", "5432", "testdb", "postgres", "postgres");
-		mbHandler.CloseConnection(connection);
+		ConnectionHandler cnHandler = new ConnectionHandler();
+		Connection connection = cnHandler.OpenConnection("10.0.3.50", "5432", "testdb", "postgres", "postgres");
+		cnHandler.CloseConnection(connection);
 		System.out.println("Opened database successfully");
 	}
 
