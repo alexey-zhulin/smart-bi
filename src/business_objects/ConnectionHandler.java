@@ -2,50 +2,45 @@ package business_objects;
 
 //http://www.tutorialspoint.com/postgresql/postgresql_java.htm
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.*;
 
 public class ConnectionHandler {
+	Connection connection;
 
-	// Открываем подключение к БД
-	public Connection OpenConnection(String host, String port, String database,
-			String username, String password) {
-		Connection connection = null;
-		try {
-			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection("jdbc:postgresql://"
-					+ host + ":" + port + "/" + database, username, password);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
-		}
+	// При создании объекта инициализируем подключение
+	public ConnectionHandler(String host, String port, String database,
+			String username, String password) throws SQLException,
+			ClassNotFoundException {
+		connection = Connect(host, port, database, username, password);
+	}
+
+	// Функция создания подключения
+	public Connection Connect(String host, String port, String database,
+			String username, String password) throws SQLException,
+			ClassNotFoundException {
+		Class.forName("org.postgresql.Driver");
+		connection = DriverManager.getConnection("jdbc:postgresql://" + host
+				+ ":" + port + "/" + database, username, password);
 		return connection;
 	}
-
-	// Закрываем подключение
-	public void CloseConnection(Connection connection) {
-		try {
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
-		}
+	
+	// Процедура закрытия подключения
+	public void CloseConnection() throws SQLException {
+		connection.close();
 	}
-
-	// Выполняем SQL команду
-	public void ExecuteCommand(Connection connection, String queryText) {
-		Statement statement = null;
-		try {
-			statement = connection.createStatement();
-			statement.executeUpdate(queryText);
-			statement.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
-		}
+	
+	// Процедура выполнения SQL команды
+	public void ExecuteCommand(String queryText)
+			throws SQLException {
+		Statement statement = connection.createStatement();
+		statement.executeUpdate(queryText);
+		statement.close();
+	}
+	
+	// Процедура получения курсора
+	public ResultSet CreateResultSet(String queryText) throws SQLException {
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(queryText);
+		return resultSet;
 	}
 }
