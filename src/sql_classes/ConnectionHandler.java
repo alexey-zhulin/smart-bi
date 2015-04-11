@@ -3,6 +3,7 @@ package sql_classes;
 //http://www.tutorialspoint.com/postgresql/postgresql_java.htm
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class ConnectionHandler {
 	Connection connection;
@@ -38,9 +39,36 @@ public class ConnectionHandler {
 	}
 	
 	// Процедура получения курсора
-	public ResultSet CreateResultSet(String queryText) throws SQLException {
-		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery(queryText);
+	public ResultSet CreateResultSet(String queryText, ArrayList<FieldContentHandler> paramsArr) throws SQLException {
+		ResultSet resultSet = null;
+		if (paramsArr.size() == 0) { // Запрос без параметров
+			Statement statement = connection.createStatement();
+			resultSet = statement.executeQuery(queryText);
+		}
+		else {
+			PreparedStatement statement = connection.prepareStatement(queryText);
+			// Подготовим параметры
+			int i;
+			for (i = 0; i < paramsArr.size(); i++) {
+				Object curObject = paramsArr.get(i).fieldValue;
+				if (curObject.getClass().equals(Integer.class)) {
+					statement.setInt(i + 1, (int)paramsArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(String.class)) {
+					statement.setString(i + 1, (String)paramsArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Boolean.class)) {
+					statement.setBoolean(i + 1, (Boolean)paramsArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Double.class)) {
+					statement.setDouble(i + 1, (Double)paramsArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Date.class)) {
+					statement.setDate(i + 1, (Date)paramsArr.get(i).fieldValue);
+				}
+			}
+			resultSet = statement.executeQuery();
+		}
 		return resultSet;
 	}
 }
