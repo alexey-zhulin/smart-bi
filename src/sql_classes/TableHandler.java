@@ -119,7 +119,7 @@ public class TableHandler {
 	}
 
 	// Процедура добавления constraint
-	public void CreateConstraint(String tableTo, boolean onDeleteCascade)
+	public void CreateConstraint(String tableTo, boolean onDeleteCascade, String in_fk_list)
 			throws SQLException {
 		Statement statement = null;
 		String queryText = "";
@@ -141,7 +141,9 @@ public class TableHandler {
 			pk_list = pk_list + resultSet.getString("column_name") + ", ";
 			fk_list = fk_list + "f_" + resultSet.getString("column_name")
 					+ ", ";
-			queryText = "alter table " + tableName + " add " + "f_" + resultSet.getString("column_name") + " int NOT NULL";
+			if (in_fk_list == "") {
+				queryText = "alter table " + tableName + " add " + "f_" + resultSet.getString("column_name") + " int NOT NULL";
+			}
 			statement = connectionHandler.connection.createStatement();
 			statement.executeUpdate(queryText);
 			statement.close();
@@ -149,8 +151,10 @@ public class TableHandler {
 		// Уберем последнюю запятую
 		pk_list = pk_list.substring(0, pk_list.length() - 2);
 		fk_list = fk_list.substring(0, fk_list.length() - 2);
+		if (in_fk_list != "") {
+			fk_list = in_fk_list;
+		}
 
-		
 		queryText = "alter table " + tableName + " add constraint fk_"
 				+ tableName + "_ref_" + tableTo + " foreign key (" + fk_list
 				+ ") references " + tableTo + " (" + pk_list + ") on delete "
@@ -159,6 +163,10 @@ public class TableHandler {
 		statement = connectionHandler.connection.createStatement();
 		statement.executeUpdate(queryText);
 		statement.close();
+	}
+	
+	public void CreateConstraint(String tableTo, boolean onDeleteCascade) throws SQLException {
+		CreateConstraint(tableTo, onDeleteCascade, "");
 	}
 
 	// Удаление таблицы

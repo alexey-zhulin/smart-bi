@@ -10,6 +10,7 @@ public class MetabaseHandler {
 
 	// Процедура удаления структуры метабазы
 	void DeleteMetabase(ConnectionHandler connection) throws SQLException {
+		// Удалим таблицы
 		TableHandler tableHandler = new TableHandler("", connection);
 		ArrayList<String> tableList = new ArrayList<String>();
 		// Базовые таблицы
@@ -28,6 +29,16 @@ public class MetabaseHandler {
 		for (i = 0; i < tableList.size(); i++) {
 			tableHandler.SetTableName(tableList.get(i));
 			tableHandler.DropTable();
+		}
+		// Удалим секвенции
+		SequenceHandler sequenceHandler = new SequenceHandler("", connection);
+		ArrayList<String> sequenceList = new ArrayList<String>();
+		// Соберем секвенции для удаления
+		sequenceList.add("TableName_Seq");
+		// Удалим секвенции
+		for (i = 0; i < sequenceList.size(); i++) {
+			sequenceHandler.SetSequenceName(sequenceList.get(i));
+			sequenceHandler.DropSequence();
 		}
 	}
 
@@ -59,6 +70,13 @@ public class MetabaseHandler {
 		tableHandler.CreateConstraint(tableTo, false);
 	}
 	
+	// Процедура создания секвенции для наименования таблиц с данными
+	void CreateTableNameSeq(ConnectionHandler connection) throws SQLException {
+		String sequenceName = "TableName_Seq";
+		SequenceHandler sequenceHandler = new SequenceHandler(sequenceName, connection);
+		sequenceHandler.CreateSequence();
+	}
+	
 	// Процедура создания таблицы ObjectClasses (классов объектов метабазы)
 	void CreateObjectClasses(ConnectionHandler connection) throws SQLException {
 		// Создадим саму таблицу
@@ -84,12 +102,16 @@ public class MetabaseHandler {
 		TableHandler tableHandler = new TableHandler(tableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("object_id", "serial", false, 1));
+		fieldsArr.add(FieldHandler.createField("parent_object_id", "int", true, 0));
 		fieldsArr.add(FieldHandler.createField("object_name", "text", false, 0));
 		fieldsArr.add(FieldHandler.createField("ext_id", "char(100)", false, 0));
 		tableHandler.CreateTable(fieldsArr);
 		// Создадим constraint
 		String tableTo = "ObjectClasses";
 		tableHandler.CreateConstraint(tableTo, false);
+		// Сделаем constraint "на себя" (иерархическую таблицу) 
+		tableTo = "MetabaseObjects";
+		tableHandler.CreateConstraint(tableTo, false, "parent_object_id");
 		// Создадим уникальный индекс по ext_id
 		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
 		indexfieldsArr.add(IndexHandler.createIndexField("ext_id", 0));
@@ -115,6 +137,8 @@ public class MetabaseHandler {
 		CreateMetabaseObjects(connection);
 		// Создадим таблицу ObjectTables
 		CreateObjectTables(connection);
+		// Создадим для нее sequence для наименований таблиц, содержащих хданные объектов
+		CreateTableNameSeq(connection);
 	}
 	
 	// Энумератор классов объектов метабазы
