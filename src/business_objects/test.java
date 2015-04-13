@@ -3,6 +3,7 @@ package business_objects;
 import java.sql.SQLException;
 
 import sql_classes.ConnectionHandler;
+import sql_classes.FieldHandler;
 
 public class test {
 	
@@ -13,25 +14,19 @@ public class test {
 	private static String password;
 
 	static void loadObjects(ConnectionHandler connection) throws SQLException {
-		MetabaseObject metabaseObject = new MetabaseObject(connection);
-		metabaseObject.object_name = "Dictionary1";
-		metabaseObject.ext_id = "OBJ1";
-		metabaseObject.f_class_id = 1;
-		metabaseObject.CreateObject();
-		//
-		metabaseObject.object_name = "Dictionary2";
-		metabaseObject.ext_id = "OBJ2";
-		metabaseObject.f_class_id = 1;
-		metabaseObject.CreateObject();
-		//
+		Dictionary dictionary = new Dictionary(connection);
+		dictionary.object_name = "Группы номенклатуры";
+		dictionary.ext_id = "GROUP_OF_GOODS";
+		dictionary.fields.add(ObjectField.createField("Код 1С", FieldHandler.createField("code_1c", "varchar(50)", true, 0)));
+		dictionary.CreateDictionary();
 	}
 	
 	public static void main(String[] args) {
-		server = "localhost";
+		server = "10.0.3.50";
 		port = "5432";
 		datebase = "testdb";
 		user = "postgres";
-		password = "123";
+		password = "postgres";
 		try {
 			ConnectionHandler connection = new ConnectionHandler(server, port, datebase, user, password);
 			MetabaseHandler metabaseHandler = new MetabaseHandler();

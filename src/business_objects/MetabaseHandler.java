@@ -15,14 +15,18 @@ public class MetabaseHandler {
 		ArrayList<String> tableList = new ArrayList<String>();
 		// Базовые таблицы
 		tableList.add("ObjectTables");
+		tableList.add("ObjectFields");
 		tableList.add("MetabaseObjects");
 		tableList.add("ObjectClasses");
 		// Таблицы экземпляров объектов метабазы
-		String queryText = "select table_name from ObjectTables";
-		ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
-		ResultSet resultSet = connection.CreateResultSet(queryText, paramsArr);
-		while (resultSet.next()) {
-			tableList.add(resultSet.getString("table_name"));
+		tableHandler.SetTableName("ObjectTables");
+		if (tableHandler.TableExists()) {
+			String queryText = "select table_name from ObjectTables";
+			ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
+			ResultSet resultSet = connection.CreateResultSet(queryText, paramsArr);
+			while (resultSet.next()) {
+				tableList.add(resultSet.getString("table_name"));
+			}
 		}
 		// Удалим выбранные таблицы
 		int i;
@@ -65,6 +69,22 @@ public class MetabaseHandler {
 		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
 		indexfieldsArr.add(IndexHandler.createIndexField("table_name", 0));
 		tableHandler.CreateIndex(indexfieldsArr, "idx_table_name", true);
+		// Создадим constraint
+		String tableTo = "MetabaseObjects";
+		tableHandler.CreateConstraint(tableTo, false);
+	}
+	
+	// Процедура создания таблицы ObjectFields (таблицы, в которой храним структуру полей объекта)
+	void CreateObjectFields(ConnectionHandler connection) throws SQLException {
+		// Создадим саму таблицу
+		String tableName = "ObjectFields";
+		TableHandler tableHandler = new TableHandler(tableName, connection);
+		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
+		fieldsArr.add(FieldHandler.createField("field_id", "serial", false, 1));
+		fieldsArr.add(FieldHandler.createField("field_alias", "text", false, 0));
+		fieldsArr.add(FieldHandler.createField("table_name", "text", false, 0));
+		fieldsArr.add(FieldHandler.createField("field_name", "text", false, 0));
+		tableHandler.CreateTable(fieldsArr);
 		// Создадим constraint
 		String tableTo = "MetabaseObjects";
 		tableHandler.CreateConstraint(tableTo, false);
@@ -139,12 +159,16 @@ public class MetabaseHandler {
 		CreateObjectTables(connection);
 		// Создадим для нее sequence для наименований таблиц, содержащих хданные объектов
 		CreateTableNameSeq(connection);
+		// Создадим таблицу хранения полей объектов
+		CreateObjectFields(connection);
 	}
 	
 	// Энумератор классов объектов метабазы
 	public enum ObjectClasses {
-		Dictionary(1)
-		, Rubricator(2);
+		Undefined(0)
+		, Folder(1)
+		, Dictionary(2)
+		, Rubricator(3);
 		
         private final int value;
 

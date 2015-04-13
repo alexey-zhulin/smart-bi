@@ -15,6 +15,11 @@ public class TableContentHandler {
 		this.connectionHandler = connectionHandler;
 	}
 
+	// Изменение имени таблицы для переключения на другую таблицу
+	public void SetTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
 	// Процедура добавления записи
 	public void AddRecord(ArrayList<FieldContentHandler> feildContentArr)
 			throws SQLException {

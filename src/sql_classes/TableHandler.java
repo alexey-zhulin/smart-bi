@@ -19,7 +19,7 @@ public class TableHandler {
 	}
 
 	// Функция возвращает существует ли таблица с именем tableName
-	boolean TableExists() throws SQLException {
+	public boolean TableExists() throws SQLException {
 
 		ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
 		paramsArr.add(FieldContentHandler.createFieldContent("object_name", tableName.toLowerCase()));
