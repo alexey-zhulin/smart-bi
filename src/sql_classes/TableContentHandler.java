@@ -42,20 +42,25 @@ public class TableContentHandler {
 		// Подготовим параметры
 		for (i = 0; i < feildContentArr.size(); i++) {
 			Object curObject = feildContentArr.get(i).fieldValue;
-			if (curObject.getClass().equals(Integer.class)) {
-				statement.setInt(i + 1, (int)feildContentArr.get(i).fieldValue);
+			if (curObject == null) {
+				statement.setNull(i + 1, Types.NULL);
 			}
-			if (curObject.getClass().equals(String.class)) {
-				statement.setString(i + 1, (String)feildContentArr.get(i).fieldValue);
-			}
-			if (curObject.getClass().equals(Boolean.class)) {
-				statement.setBoolean(i + 1, (Boolean)feildContentArr.get(i).fieldValue);
-			}
-			if (curObject.getClass().equals(Double.class)) {
-				statement.setDouble(i + 1, (Double)feildContentArr.get(i).fieldValue);
-			}
-			if (curObject.getClass().equals(Date.class)) {
-				statement.setDate(i + 1, (Date)feildContentArr.get(i).fieldValue);
+			else {
+				if (curObject.getClass().equals(Integer.class)) {
+					statement.setInt(i + 1, (int)feildContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(String.class)) {
+					statement.setString(i + 1, (String)feildContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Boolean.class)) {
+					statement.setBoolean(i + 1, (Boolean)feildContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Double.class)) {
+					statement.setDouble(i + 1, (Double)feildContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Date.class)) {
+					statement.setDate(i + 1, (Date)feildContentArr.get(i).fieldValue);
+				}
 			}
 		}
 		// Выполним скрипт

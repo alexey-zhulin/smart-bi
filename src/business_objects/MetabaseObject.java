@@ -17,11 +17,8 @@ public class MetabaseObject {
 	public MetabaseObject(ConnectionHandler connection) {
 		this.connection = connection;
 		f_class_id = ObjectClasses.Undefined.getValue();
-		// Создадим обязательные поля
+		// Инициализируем массив полей
 		fields = new ArrayList<ObjectField>();
-		fields.add(ObjectField.createField("ID", FieldHandler.createField("id", "int", false, 1), true));
-		fields.add(ObjectField.createField("NAME", FieldHandler.createField("name", "text", false, 0), true));
-		fields.add(ObjectField.createField("PARENT_ID", FieldHandler.createField("parent_id", "int", true, 0), true));
 	}
 	
 	// Процедура создания объекта (регистрация в таблице MetabaseObjects)
@@ -51,7 +48,11 @@ public class MetabaseObject {
 	
 	// Энумератор для наименования префикса таблиц с данными
 	public enum DataTablePrefixes {
-		Common("_td");
+		Dictionary("_d")
+		, Revisions("_rr")
+		, Facts("_rf")
+		, Values("_rv")
+		;
 		
         private final String value;
 

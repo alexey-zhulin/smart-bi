@@ -13,21 +13,22 @@ public class MetabaseHandler {
 		// Удалим таблицы
 		TableHandler tableHandler = new TableHandler("", connection);
 		ArrayList<String> tableList = new ArrayList<String>();
-		// Базовые таблицы
-		tableList.add("ObjectTables");
-		tableList.add("ObjectFields");
-		tableList.add("MetabaseObjects");
-		tableList.add("ObjectClasses");
 		// Таблицы экземпляров объектов метабазы
 		tableHandler.SetTableName("ObjectTables");
 		if (tableHandler.TableExists()) {
-			String queryText = "select table_name from ObjectTables";
+			String queryText = "select table_name from ObjectTables order by del_order";
 			ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
 			ResultSet resultSet = connection.CreateResultSet(queryText, paramsArr);
 			while (resultSet.next()) {
 				tableList.add(resultSet.getString("table_name"));
 			}
 		}
+		// Базовые таблицы
+		tableList.add("ObjectTables");
+		tableList.add("ObjectFields");
+		tableList.add("MetabaseObjects");
+		tableList.add("ObjectClasses");
+		tableList.add("ObjectFieldTypes");
 		// Удалим выбранные таблицы
 		int i;
 		for (i = 0; i < tableList.size(); i++) {
@@ -64,6 +65,7 @@ public class MetabaseHandler {
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("table_id", "serial", false, 1));
 		fieldsArr.add(FieldHandler.createField("table_name", "text", false, 0));
+		fieldsArr.add(FieldHandler.createField("del_order", "integer", false, 0)); // Порядок расположения (важно в части удаления)
 		tableHandler.CreateTable(fieldsArr);
 		// Создадим уникальный индекс по наименованию
 		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
@@ -72,6 +74,31 @@ public class MetabaseHandler {
 		// Создадим constraint
 		String tableTo = "MetabaseObjects";
 		tableHandler.CreateConstraint(tableTo, false);
+	}
+
+	// Процедура добаввляет запись в таблицу ObjectClasses
+	void AddObjectFieldType(ConnectionHandler connection, int field_type_id, String field_type_name) throws SQLException {
+		String tableName = "ObjectFieldTypes";
+		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
+		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
+		fieldsContArr.add(FieldContentHandler.createFieldContent("field_type_id", field_type_id));
+		fieldsContArr.add(FieldContentHandler.createFieldContent("field_type_name", field_type_name));
+		tableContent.AddRecord(fieldsContArr);
+	}
+	
+	// Процедура создания таблицы ObjectFieldTypes (таблицы, в которой храним типы полей)
+	void CreateObjectFieldTypes(ConnectionHandler connection) throws SQLException {
+		// Создадим саму таблицу
+		String tableName = "ObjectFieldTypes";
+		TableHandler tableHandler = new TableHandler(tableName, connection);
+		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
+		fieldsArr.add(FieldHandler.createField("field_type_id", "serial", false, 1));
+		fieldsArr.add(FieldHandler.createField("field_type_name", "text", false, 0));
+		tableHandler.CreateTable(fieldsArr);
+		// Инициализируем значения
+		AddObjectFieldType(connection, FieldTypes.Regular.getValue(), "Regular");
+		AddObjectFieldType(connection, FieldTypes.RubrUnit.getValue(), "RubrUnit");
+		AddObjectFieldType(connection, FieldTypes.RubrDateLevel.getValue(), "RubrDateLevel");
 	}
 	
 	// Процедура создания таблицы ObjectFields (таблицы, в которой храним структуру полей объекта)
@@ -84,9 +111,12 @@ public class MetabaseHandler {
 		fieldsArr.add(FieldHandler.createField("field_alias", "text", false, 0));
 		fieldsArr.add(FieldHandler.createField("table_name", "text", false, 0));
 		fieldsArr.add(FieldHandler.createField("field_name", "text", false, 0));
+		fieldsArr.add(FieldHandler.createField("linked_table_name", "text", true, 0));
 		tableHandler.CreateTable(fieldsArr);
 		// Создадим constraint
 		String tableTo = "MetabaseObjects";
+		tableHandler.CreateConstraint(tableTo, false);
+		tableTo = "ObjectFieldTypes";
 		tableHandler.CreateConstraint(tableTo, false);
 	}
 	
@@ -111,6 +141,8 @@ public class MetabaseHandler {
 		indexfieldsArr.add(IndexHandler.createIndexField("class_name", 0));
 		tableHandler.CreateIndex(indexfieldsArr, "idx_class_name", true);
 		// Инициализируем значения
+		AddObjectClass(connection, ObjectClasses.Undefined.getValue(), "Undefined");
+		AddObjectClass(connection, ObjectClasses.Folder.getValue(), "Folder");
 		AddObjectClass(connection, ObjectClasses.Dictionary.getValue(), "Dictionary");
 		AddObjectClass(connection, ObjectClasses.Rubricator.getValue(), "Rubricator");
 	}
@@ -159,6 +191,8 @@ public class MetabaseHandler {
 		CreateObjectTables(connection);
 		// Создадим для нее sequence для наименований таблиц, содержащих хданные объектов
 		CreateTableNameSeq(connection);
+		// Создадим таблицу с типами полей
+		CreateObjectFieldTypes(connection);
 		// Создадим таблицу хранения полей объектов
 		CreateObjectFields(connection);
 	}
@@ -173,6 +207,21 @@ public class MetabaseHandler {
         private final int value;
 
         private ObjectClasses(final int newValue) {
+            value = newValue;
+        }
+
+        public int getValue() { return value; }
+	}
+	
+	// Энумератор типов полей объектов метабазы
+	public enum FieldTypes {
+		Regular(0)
+		, RubrUnit(1)
+		, RubrDateLevel(2);
+		
+        private final int value;
+
+        private FieldTypes(final int newValue) {
             value = newValue;
         }
 
