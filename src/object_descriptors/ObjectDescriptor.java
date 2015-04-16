@@ -1,28 +1,28 @@
-package business_objects;
+package object_descriptors;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-import business_objects.MetabaseHandler.ObjectClasses;
+import object_descriptors.MetabaseDescriptor.ObjectClasses;
 import sql_classes.*;
 
-public class MetabaseObject {
+public class ObjectDescriptor {
 	public int object_id;
 	public String object_name;
 	public String ext_id;
-	ArrayList<ObjectField> fields;
+	public ArrayList<ObjectFieldDescriptor> fields;
 	ConnectionHandler connection;
 	int f_class_id;
 	
-	public MetabaseObject(ConnectionHandler connection) {
+	public ObjectDescriptor(ConnectionHandler connection) {
 		this.connection = connection;
 		f_class_id = ObjectClasses.Undefined.getValue();
 		// Инициализируем массив полей
-		fields = new ArrayList<ObjectField>();
+		fields = new ArrayList<ObjectFieldDescriptor>();
 	}
 	
 	// Процедура создания объекта (регистрация в таблице MetabaseObjects)
-	void CreateObject() throws SQLException {
+	public void CreateObject() throws SQLException {
 		// Добавим запись в таблицу MetabaseObjects
 		String tableName = "MetabaseObjects";
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
@@ -52,6 +52,7 @@ public class MetabaseObject {
 		, Revisions("_rr")
 		, Facts("_rf")
 		, Values("_rv")
+		, CalendarLevels("_rc")
 		;
 		
         private final String value;

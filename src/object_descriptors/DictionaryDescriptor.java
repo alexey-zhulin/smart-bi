@@ -1,21 +1,21 @@
-package business_objects;
+package object_descriptors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import business_objects.MetabaseHandler.ObjectClasses;
+import object_descriptors.MetabaseDescriptor.ObjectClasses;
 import sql_classes.*;
 
-public class Dictionary extends MetabaseObject {
+public class DictionaryDescriptor extends ObjectDescriptor {
 
-	public Dictionary(ConnectionHandler connection) {
+	public DictionaryDescriptor(ConnectionHandler connection) {
 		super(connection);
 		f_class_id = ObjectClasses.Dictionary.getValue();
 		// Создадим обязательные поля
-		fields.add(ObjectField.createField("ID", FieldHandler.createField("id", "int", false, 1), true, business_objects.MetabaseHandler.FieldTypes.Regular, null));
-		fields.add(ObjectField.createField("NAME", FieldHandler.createField("name", "text", false, 0), true, business_objects.MetabaseHandler.FieldTypes.Regular, null));
-		fields.add(ObjectField.createField("PARENT_ID", FieldHandler.createField("parent_id", "int", true, 0), true, business_objects.MetabaseHandler.FieldTypes.Regular, null));
+		fields.add(ObjectFieldDescriptor.createField("ID", FieldHandler.createField("id", "int", false, 1), true, object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
+		fields.add(ObjectFieldDescriptor.createField("NAME", FieldHandler.createField("name", "text", false, 0), true, object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
+		fields.add(ObjectFieldDescriptor.createField("PARENT_ID", FieldHandler.createField("parent_id", "int", true, 0), true, object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
 	}
 	
 	// Процедура создания словаря в метабазе
@@ -29,11 +29,12 @@ public class Dictionary extends MetabaseObject {
 		int i;
 		for (i = 0; i < fields.size(); i++) {
 			// Добавляем только обычные поля, чтобы исключить ошибочно добавленные поля другого типа
-			if (fields.get(i).fieldType == business_objects.MetabaseHandler.FieldTypes.Regular) {
+			if (fields.get(i).fieldType == object_descriptors.MetabaseDescriptor.FieldTypes.Regular) {
 				fieldsArr.add(fields.get(i).fieldHandler);
 			}
 		}
-		tableHandler.CreateTable(fieldsArr);
+		String tableComment = "Data table for dictionary [" + object_name + "; ext_id = " + ext_id + "]";
+		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Запишем базовые параметры объекта в таблицу MetabaseObjects
 		CreateObject();
 		int object_id = GetObjectId(ext_id);

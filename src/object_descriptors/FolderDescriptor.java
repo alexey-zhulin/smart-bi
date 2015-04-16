@@ -1,13 +1,13 @@
-package business_objects;
+package object_descriptors;
 
 import java.sql.SQLException;
 
-import business_objects.MetabaseHandler.ObjectClasses;
+import object_descriptors.MetabaseDescriptor.ObjectClasses;
 import sql_classes.ConnectionHandler;
 
-public class Folder extends MetabaseObject {
+public class FolderDescriptor extends ObjectDescriptor {
 	
-	public Folder(ConnectionHandler connection) {
+	public FolderDescriptor(ConnectionHandler connection) {
 		super(connection);
 		f_class_id = ObjectClasses.Dictionary.getValue();
 	}

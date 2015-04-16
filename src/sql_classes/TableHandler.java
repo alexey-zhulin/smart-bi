@@ -32,7 +32,7 @@ public class TableHandler {
 	}
 
 	// Создание таблицы
-	public void CreateTable(ArrayList<FieldHandler> fieldsArr) throws SQLException {
+	public void CreateTable(ArrayList<FieldHandler> fieldsArr, String tableComment) throws SQLException {
 		if (TableExists()) {
 			return;
 		}
@@ -69,6 +69,10 @@ public class TableHandler {
 						+ ((fieldsMap.size() > i) ? "," : "");
 			}
 			queryText = queryText + ");\n";
+		}
+		// Добавим комментарий к таблице
+		if (tableComment != null) {
+			queryText = queryText + "comment on table " + tableName + " is '" + tableComment + "';\n";
 		}
 
 		// Выполним скрипт

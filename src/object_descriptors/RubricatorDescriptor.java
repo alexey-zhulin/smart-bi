@@ -1,14 +1,14 @@
-package business_objects;
+package object_descriptors;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import business_objects.MetabaseHandler.ObjectClasses;
+import object_descriptors.MetabaseDescriptor.ObjectClasses;
 import sql_classes.*;
 
-public class Rubricator extends MetabaseObject {
+public class RubricatorDescriptor extends ObjectDescriptor {
 
-	public Rubricator(ConnectionHandler connection) throws SQLException {
+	public RubricatorDescriptor(ConnectionHandler connection) throws SQLException {
 		super(connection);
 		f_class_id = ObjectClasses.Rubricator.getValue();
 	}
@@ -23,7 +23,8 @@ public class Rubricator extends MetabaseObject {
 		fieldsArr.add(FieldHandler.createField("revision_id", "serial", false, 1));
 		fieldsArr.add(FieldHandler.createField("revision_name", "text", false, 0));
 		fieldsArr.add(FieldHandler.createField("revision_date", "timestamp without time zone", false, 0));
-		tableHandler.CreateTable(fieldsArr);
+		String tableComment = "Revision data table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
+		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Создадим таблицу фактов
 		String factTableName = DataTablePrefixes.Facts.getValue() + nameSequence.GetNextVal();
 		tableHandler.SetTableName(factTableName);
@@ -32,7 +33,7 @@ public class Rubricator extends MetabaseObject {
 		int i;
 		for (i = 0; i < fields.size(); i++) {
 			// Добавляем только обычные поля
-			if (fields.get(i).fieldType == business_objects.MetabaseHandler.FieldTypes.Regular) {
+			if (fields.get(i).fieldType == object_descriptors.MetabaseDescriptor.FieldTypes.Regular) {
 				fieldsArr.add(fields.get(i).fieldHandler); // Добавляем поля из структуры каталога
 			}
 		}
@@ -40,21 +41,13 @@ public class Rubricator extends MetabaseObject {
 		boolean fieldWasInserted = false;
 		for (i = 0; i < fields.size(); i++) {
 			// Добавляем только обычные поля
-			if ((fields.get(i).fieldType == business_objects.MetabaseHandler.FieldTypes.RubrUnit) & (!fieldWasInserted)) {
+			if ((fields.get(i).fieldType == object_descriptors.MetabaseDescriptor.FieldTypes.RubrUnit) & (!fieldWasInserted)) {
 				fieldsArr.add(fields.get(i).fieldHandler); // Добавляем поля из структуры каталога
 				fieldWasInserted = true;
 			}
 		}
-		// Добавим поле с уровнем календаря
-		fieldWasInserted = false;
-		for (i = 0; i < fields.size(); i++) {
-			// Добавляем только обычные поля
-			if ((fields.get(i).fieldType == business_objects.MetabaseHandler.FieldTypes.RubrDateLevel) & (!fieldWasInserted)) {
-				fieldsArr.add(fields.get(i).fieldHandler); // Добавляем поля из структуры каталога
-				fieldWasInserted = true;
-			}
-		}
-		tableHandler.CreateTable(fieldsArr);
+		tableComment = "Facts data table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
+		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Создадим constraint на таблицу ревизий
 		String tableTo = revTableName;
 		tableHandler.CreateConstraint(tableTo, true);
@@ -65,13 +58,31 @@ public class Rubricator extends MetabaseObject {
 		fieldsArr.add(FieldHandler.createField("value_id", "serial", false, 1));
 		fieldsArr.add(FieldHandler.createField("value_date", "timestamp without time zone", false, 0));
 		fieldsArr.add(FieldHandler.createField("value", "real", false, 0));
-		tableHandler.CreateTable(fieldsArr);
+		tableComment = "Values data table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
+		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Создадим constraint на таблицу ревизий
 		tableTo = revTableName;
 		tableHandler.CreateConstraint(tableTo, true);
 		// Создадим constraint на таблицу фактов
 		tableTo = factTableName;
 		tableHandler.CreateConstraint(tableTo, true);
+		// Создадим constraint на таблицу CalendarLevels
+		tableTo = "CalendarLevels";
+		tableHandler.CreateConstraint(tableTo, true);
+		// Добавим таблицу для хранения информации об уровнях календаря рубрикатора
+		String calendarLevelTableName = DataTablePrefixes.CalendarLevels.getValue() + nameSequence.GetNextVal();
+		tableHandler.SetTableName(calendarLevelTableName);
+		fieldsArr = new ArrayList<FieldHandler>();
+		fieldsArr.add(FieldHandler.createField("calendar_level_id", "serial", false, 1));
+		tableComment = "Calendar levels table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
+		tableHandler.CreateTable(fieldsArr, tableComment);
+		// Создадим constraint на словарь уровней календаря
+		tableTo = "CalendarLevels";
+		tableHandler.CreateConstraint(tableTo, true);
+		// Создадим уникальный индекс на поле уровня календаря
+		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
+		indexfieldsArr.add(IndexHandler.createIndexField("f_level_id", 0));
+		tableHandler.CreateIndex(indexfieldsArr, "idx_calendar_level", true);
 		// Запишем базовые параметры объекта в таблицу MetabaseObjects
 		CreateObject();
 		int object_id = GetObjectId(ext_id);
@@ -94,6 +105,12 @@ public class Rubricator extends MetabaseObject {
 		fieldsContArr.add(FieldContentHandler.createFieldContent("f_object_id", object_id));
 		fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", revTableName));
 		fieldsContArr.add(FieldContentHandler.createFieldContent("del_order", 2));
+		tableContent.AddRecord(fieldsContArr);
+		//
+		fieldsContArr = new ArrayList<FieldContentHandler>();
+		fieldsContArr.add(FieldContentHandler.createFieldContent("f_object_id", object_id));
+		fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", calendarLevelTableName));
+		fieldsContArr.add(FieldContentHandler.createFieldContent("del_order", 3));
 		tableContent.AddRecord(fieldsContArr);
 		// Запишем информацию о полях объекта в таблице ObjectFields (все пользовательские поля находятся в таблице фактов)
 		tableContent.SetTableName("ObjectFields");
