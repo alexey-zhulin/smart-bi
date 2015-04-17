@@ -9,11 +9,12 @@ import sql_classes.*;
 
 public class DictionaryDescriptor extends ObjectDescriptor {
 
-	public DictionaryDescriptor(ConnectionHandler connection) {
+	public DictionaryDescriptor(ConnectionHandler connection) throws Exception {
 		super(connection);
+		//throw new Exception("Error example");
 		f_class_id = ObjectClasses.Dictionary.getValue();
 		// Создадим обязательные поля
-		fields.add(ObjectFieldDescriptor.createField("ID", FieldHandler.createField("id", "int", false, 1), true, object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
+		fields.add(ObjectFieldDescriptor.createField("ID", FieldHandler.createField("id", "serial", false, 1), true, object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
 		fields.add(ObjectFieldDescriptor.createField("NAME", FieldHandler.createField("name", "text", false, 0), true, object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
 		fields.add(ObjectFieldDescriptor.createField("PARENT_ID", FieldHandler.createField("parent_id", "int", true, 0), true, object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
 	}

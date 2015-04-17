@@ -21,45 +21,118 @@ public class TableContentHandler {
 	}
 
 	// Процедура добавления записи
-	public void AddRecord(ArrayList<FieldContentHandler> feildContentArr)
+	public void AddRecord(ArrayList<FieldContentHandler> fieldContentArr)
 			throws SQLException {
 		String queryText = "insert into " + tableName + "\n" + "(";
 		int i;
-		for (i = 0; i < feildContentArr.size(); i++) {
-			queryText = queryText + feildContentArr.get(i).fieldName
-					+ (((feildContentArr.size() - 1) > i) ? "," : "");
+		for (i = 0; i < fieldContentArr.size(); i++) {
+			queryText = queryText + fieldContentArr.get(i).fieldName
+					+ (((fieldContentArr.size() - 1) > i) ? "," : "");
 		}
 		queryText = queryText + ")\n";
 		queryText = queryText + "values\n";
 		queryText = queryText + "(";
-		for (i = 0; i < feildContentArr.size(); i++) {
+		for (i = 0; i < fieldContentArr.size(); i++) {
 			queryText = queryText + "? "
-					+ (((feildContentArr.size() - 1) > i) ? "," : "");
+					+ (((fieldContentArr.size() - 1) > i) ? "," : "");
 		}
 		queryText = queryText + ");\n";
 		PreparedStatement statement = null;
 		statement = connectionHandler.connection.prepareStatement(queryText);
 		// Подготовим параметры
-		for (i = 0; i < feildContentArr.size(); i++) {
-			Object curObject = feildContentArr.get(i).fieldValue;
+		for (i = 0; i < fieldContentArr.size(); i++) {
+			Object curObject = fieldContentArr.get(i).fieldValue;
 			if (curObject == null) {
 				statement.setNull(i + 1, Types.NULL);
 			}
 			else {
 				if (curObject.getClass().equals(Integer.class)) {
-					statement.setInt(i + 1, (int)feildContentArr.get(i).fieldValue);
+					statement.setInt(i + 1, (int)fieldContentArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(String.class)) {
-					statement.setString(i + 1, (String)feildContentArr.get(i).fieldValue);
+					statement.setString(i + 1, (String)fieldContentArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(Boolean.class)) {
-					statement.setBoolean(i + 1, (Boolean)feildContentArr.get(i).fieldValue);
+					statement.setBoolean(i + 1, (Boolean)fieldContentArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(Double.class)) {
-					statement.setDouble(i + 1, (Double)feildContentArr.get(i).fieldValue);
+					statement.setDouble(i + 1, (Double)fieldContentArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(Date.class)) {
-					statement.setDate(i + 1, (Date)feildContentArr.get(i).fieldValue);
+					statement.setDate(i + 1, (Date)fieldContentArr.get(i).fieldValue);
+				}
+			}
+		}
+		// Выполним скрипт
+		statement.executeUpdate();
+		statement.close();
+	}
+	
+	// Процедура изменения записи
+	public void UpdateRecord(ArrayList<FieldContentHandler> fieldContentArr, ArrayList<FieldContentHandler> primaryKeyArr)
+			throws SQLException {
+		
+		String queryText = "update " + tableName + "\n";
+		queryText = queryText + "set\n";
+		int i;
+		for (i = 0; i < fieldContentArr.size(); i++) {
+			queryText = queryText + fieldContentArr.get(i).fieldName + " = ?"
+					+ (((fieldContentArr.size() - 1) > i) ? ",\n" : "\n");
+		}
+		queryText = queryText + "\n";
+		queryText = queryText + "where\n";
+		for (i = 0; i < primaryKeyArr.size(); i++) {
+			queryText = queryText + fieldContentArr.get(i).fieldName + " = ?"
+					+ (((fieldContentArr.size() - 1) > i) ? "and \n" : "\n");
+			
+		}
+		PreparedStatement statement = null;
+		statement = connectionHandler.connection.prepareStatement(queryText);
+		// Подготовим параметры (изменяемые значения)
+		for (i = 0; i < fieldContentArr.size(); i++) {
+			Object curObject = fieldContentArr.get(i).fieldValue;
+			if (curObject == null) {
+				statement.setNull(i + 1, Types.NULL);
+			}
+			else {
+				if (curObject.getClass().equals(Integer.class)) {
+					statement.setInt(i + 1, (int)fieldContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(String.class)) {
+					statement.setString(i + 1, (String)fieldContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Boolean.class)) {
+					statement.setBoolean(i + 1, (Boolean)fieldContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Double.class)) {
+					statement.setDouble(i + 1, (Double)fieldContentArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Date.class)) {
+					statement.setDate(i + 1, (Date)fieldContentArr.get(i).fieldValue);
+				}
+			}
+		}
+		// Подготовим параметры (первичный ключ)
+		for (i = 0; i < primaryKeyArr.size(); i++) {
+			Object curObject = primaryKeyArr.get(i).fieldValue;
+			if (curObject == null) {
+				statement.setNull(i + 1, Types.NULL);
+			}
+			else {
+				if (curObject.getClass().equals(Integer.class)) {
+					statement.setInt(i + 1, (int)primaryKeyArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(String.class)) {
+					statement.setString(i + 1, (String)primaryKeyArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Boolean.class)) {
+					statement.setBoolean(i + 1, (Boolean)primaryKeyArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Double.class)) {
+					statement.setDouble(i + 1, (Double)primaryKeyArr.get(i).fieldValue);
+				}
+				if (curObject.getClass().equals(Date.class)) {
+					statement.setDate(i + 1, (Date)primaryKeyArr.get(i).fieldValue);
 				}
 			}
 		}

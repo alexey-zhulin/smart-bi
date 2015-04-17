@@ -181,4 +181,17 @@ public class TableHandler {
 		statement.executeUpdate(queryText);
 		statement.close();
 	}
+	
+	// Функция проверяет, существует ли указанное поле в таблице
+	public boolean FieldExists(String fieldName) throws SQLException {
+		String queryText = "select * from information_schema.columns where table_name = lower(?) and column_name = lower(?)";
+		ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
+		//paramsArr.add(arg0)
+		ResultSet resultSet = connectionHandler.CreateResultSet(queryText, paramsArr);
+		while (resultSet.next()) {
+			return true;
+		}
+		// Если мы здесь - значит поле в таблице не найдено
+		return false;
+	}
 }

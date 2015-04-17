@@ -1,7 +1,5 @@
 package business_objects;
 
-import java.sql.SQLException;
-
 import object_descriptors.DictionaryDescriptor;
 import object_descriptors.MetabaseDescriptor;
 import object_descriptors.ObjectFieldDescriptor;
@@ -17,7 +15,7 @@ public class test {
 	private static String user;
 	private static String password;
 
-	static void loadObjects(ConnectionHandler connection) throws SQLException {
+	static void loadObjects(ConnectionHandler connection) throws Exception {
 		// Справочник "Группы номенклатуры"
 		DictionaryDescriptor goods_groups = new DictionaryDescriptor(connection);
 		goods_groups.object_name = "Группы номенклатуры";
