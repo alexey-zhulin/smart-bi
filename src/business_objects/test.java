@@ -1,11 +1,15 @@
 package business_objects;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import data_loader_descriptors.LoadParams;
+import data_loaders.DictionaryLoaderFromText;
 import object_descriptors.DictionaryDescriptor;
 import object_descriptors.MetabaseDescriptor;
 import object_descriptors.ObjectFieldDescriptor;
 import object_descriptors.RubricatorDescriptor;
+import object_instances.DictionaryInstance;
 import sql_classes.ConnectionHandler;
 import sql_classes.FieldHandler;
 
@@ -18,8 +22,28 @@ public class test {
 	private static String password;
 
 	// Процедура загрузки единиц измерения 
+	static void LoadDictionary(ConnectionHandler connection, DictionaryDescriptor dictionaryDescriptor, String fileName) throws Exception {
+		// Подготовим загрузчик
+		DictionaryLoaderFromText loaderFromText = new DictionaryLoaderFromText();
+		loaderFromText.delimeter = ";";
+		loaderFromText.fileName = fileName;
+		List<String> headers = new ArrayList<String>();
+		headers.add("id");
+		headers.add("name");
+		headers.add("parent_id");
+		headers.add("code_1c");
+		loaderFromText.headers = headers;
+		// Определим параметры загрузки
+		LoadParams loadParams = new LoadParams();
+		loadParams.loadSequenceFields = false;
+		loadParams.syncFieldName = "code_1c";
+		// Создадим instance словаря для загрузки
+		DictionaryInstance dictionaryInstance = new DictionaryInstance(connection);
+		dictionaryInstance.dictionaryDescriptor = dictionaryDescriptor;
+		dictionaryInstance.LoadData(loaderFromText, loadParams);
+	}
 	
-	static void loadObjects(ConnectionHandler connection) throws Exception {
+	static void CreateObjects(ConnectionHandler connection) throws Exception {
 		// Справочник "Группы номенклатуры"
 		DictionaryDescriptor goods_groups = new DictionaryDescriptor(connection);
 		goods_groups.object_name = "Группы номенклатуры";
@@ -59,6 +83,9 @@ public class test {
 		indexFields.add(code_1cField);
 		measure_units.CreateIndexForFields(indexFields, "idx_units_code_1c",
 				true);
+		// Загрузим данные
+		String fileName = "E:\\tmp\\data_for_units.txt";
+		LoadDictionary(connection, measure_units, fileName);
 		// Каталог показателей "Динамика продаж номенклатуры"
 		RubricatorDescriptor rubricator = new RubricatorDescriptor(connection);
 		rubricator.object_name = "Динамика продаж номенклатуры";
@@ -91,7 +118,7 @@ public class test {
 			// metabaseHandler.DeleteMetabase(connection);
 			boolean recreateMetabase = true;
 			metabaseHandler.CreateMetabase(connection, recreateMetabase);
-			loadObjects(connection);
+			CreateObjects(connection);
 			connection.CloseConnection();
 		} catch (Exception e) {
 			// System.err.println(e.getClass().getName() + ": " +

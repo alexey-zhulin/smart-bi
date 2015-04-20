@@ -27,9 +27,9 @@ public class DictionaryLoaderFromText implements IDictionaryLoader {
 		}
 		// Заполним данные
 		Scanner scanner = new Scanner (new File(fileName));
-		scanner.useDelimiter(delimeter);
 		while (scanner.hasNextLine()) {
 			Scanner sentence = new Scanner(scanner.nextLine());
+			sentence.useDelimiter(delimeter);
 			int i = 1;
 			List<Object> rowData = new ArrayList<Object>();
 			while (sentence.hasNext()) {

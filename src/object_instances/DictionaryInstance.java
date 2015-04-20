@@ -47,14 +47,14 @@ public class DictionaryInstance extends ObjectInstance {
 		ResultSetMetaData resultMetaData = resultSet.getMetaData();
 		if (resultMetaData.getColumnCount() != fieldsArr.size()) {
 			throw new Exception(
-					"The field count in data source is not equal to field count in dictionary");
+					"The field count in data source ["+ resultMetaData.getColumnCount() +"] is not equal to field count in dictionary [" + fieldsArr.size() + "]");
 		}
 		int i;
 		for (i = 1; i <= resultMetaData.getColumnCount(); i++) {
-			if (resultMetaData.getColumnName(i) != fieldsArr.get(i).fieldHandler.fieldName) {
+			if (resultMetaData.getColumnName(i) != fieldsArr.get(i-1).fieldHandler.fieldName) {
 				throw new Exception("The field number [" + i
 						+ "] in data source have to have the name ["
-						+ fieldsArr.get(i).fieldHandler.fieldName + "]");
+						+ fieldsArr.get(i-1).fieldHandler.fieldName + "] instead of [" + resultMetaData.getColumnName(i) + "]");
 			}
 		}
 		// Загрузим данные в словарь
@@ -69,10 +69,10 @@ public class DictionaryInstance extends ObjectInstance {
 				if (!loadParams.loadSequenceFields) {
 					if (resultMetaData.isAutoIncrement(i)) continue;
 				}
-				fieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i).fieldHandler.fieldName, resultSet.getObject(i)));
+				fieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i-1).fieldHandler.fieldName, resultSet.getObject(i)));
 				// Опираясь на поле синхронизации, проверим добавлять новую запись или обновлять существующую
-				if (fieldsArr.get(i).fieldHandler.fieldName == loadParams.syncFieldName) {
-					keyFieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i).fieldHandler.fieldName, resultSet.getObject(i)));
+				if (fieldsArr.get(i-1).fieldHandler.fieldName == loadParams.syncFieldName) {
+					keyFieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i-1).fieldHandler.fieldName, resultSet.getObject(i)));
 				}
 			}
 			if (needToUpdate) tableContent.UpdateRecord(fieldsContArr, keyFieldsContArr);
