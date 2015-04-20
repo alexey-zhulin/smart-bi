@@ -61,7 +61,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		}
 	}
 	
-	// Функция возвращает имя таблицыЮ в которой хранятся данные объекта
+	// Функция возвращает имя таблицы, в которой хранятся данные объекта
 	public String GetTableName() throws SQLException {
 		String tableName = "";
 		String queryText = "select table_name from ObjectTables where f_object_id = ?";
@@ -72,5 +72,17 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 			tableName = resultSet.getString("table_name");
 		}
 		return tableName;
+	}
+	
+	// Процедура создает индекс по выбранным полям справочника
+	public void CreateIndexForFields(ArrayList<ObjectFieldDescriptor> indexFields, String index_name, boolean isUnique) throws SQLException {
+		if (indexFields.size() == 0) return;
+		int i;
+		ArrayList<IndexHandler> indexList = new ArrayList<IndexHandler>();
+		for (i = 0; i < indexFields.size(); i++) {
+			indexList.add(IndexHandler.createIndexField(indexFields.get(i).fieldHandler.fieldName, i));
+		}
+		TableHandler tableHandler = new TableHandler(GetTableName(), connection);
+		tableHandler.CreateIndex(indexList, index_name, isUnique);
 	}
 }

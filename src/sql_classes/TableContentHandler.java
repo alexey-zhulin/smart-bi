@@ -82,8 +82,8 @@ public class TableContentHandler {
 		queryText = queryText + "\n";
 		queryText = queryText + "where\n";
 		for (i = 0; i < primaryKeyArr.size(); i++) {
-			queryText = queryText + fieldContentArr.get(i).fieldName + " = ?"
-					+ (((fieldContentArr.size() - 1) > i) ? "and \n" : "\n");
+			queryText = queryText + primaryKeyArr.get(i).fieldName + " = ?"
+					+ (((primaryKeyArr.size() - 1) > i) ? "and \n" : "\n");
 			
 		}
 		PreparedStatement statement = null;
@@ -139,5 +139,24 @@ public class TableContentHandler {
 		// Выполним скрипт
 		statement.executeUpdate();
 		statement.close();
+	}
+	
+	// Функция возвращает, существует ли запись в таблице с указанным значением ключевого поля
+	public boolean ValueExists(ArrayList<FieldContentHandler> primaryKeyArr) throws SQLException {
+		if (primaryKeyArr.size() == 0) return false;
+		String queryText = "select * from " + tableName + "\n" + "(";
+		queryText = queryText + "where\n";
+		int i;
+		for (i = 0; i < primaryKeyArr.size(); i++) {
+			queryText = queryText + primaryKeyArr.get(i).fieldName + " = ?"
+					+ (((primaryKeyArr.size() - 1) > i) ? "and \n" : "\n");
+			
+		}
+		ResultSet resultSet = connectionHandler.CreateResultSet(queryText, primaryKeyArr);
+		while (resultSet.next()) {
+			return true;
+		}
+		// Если мы здесь, то значение не найдено
+		return false;
 	}
 }

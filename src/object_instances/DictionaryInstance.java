@@ -62,14 +62,21 @@ public class DictionaryInstance extends ObjectInstance {
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
 		while (resultSet.next()) {
 			ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
+			ArrayList<FieldContentHandler> keyFieldsContArr = new ArrayList<FieldContentHandler>();
+			boolean needToUpdate = false;
 			for (i = 1; i <= resultMetaData.getColumnCount(); i++) {
 				// При необходимости исключим загрузку автоинкрементного поля (serial)
 				if (!loadParams.loadSequenceFields) {
 					if (resultMetaData.isAutoIncrement(i)) continue;
 				}
 				fieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i).fieldHandler.fieldName, resultSet.getObject(i)));
+				// Опираясь на поле синхронизации, проверим добавлять новую запись или обновлять существующую
+				if (fieldsArr.get(i).fieldHandler.fieldName == loadParams.syncFieldName) {
+					keyFieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i).fieldHandler.fieldName, resultSet.getObject(i)));
+				}
 			}
-			tableContent.AddRecord(fieldsContArr);
+			if (needToUpdate) tableContent.UpdateRecord(fieldsContArr, keyFieldsContArr);
+			else tableContent.AddRecord(fieldsContArr);
 		}
 	}
 }
