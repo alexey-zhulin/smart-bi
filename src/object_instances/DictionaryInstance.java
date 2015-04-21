@@ -41,22 +41,7 @@ public class DictionaryInstance extends ObjectInstance {
 	// Процедура загружает данные в справочник
 	public void LoadData(IDictionaryLoader dataLoader, LoadParams loadParams) throws Exception {
 		ResultSet resultSet = dataLoader.getData();
-		// Перед загрузкой проверим соотвествие структуры даных полученного
-		// курсора и полей словаря
-		ArrayList<ObjectFieldDescriptor> fieldsArr = dictionaryDescriptor.fields;
 		ResultSetMetaData resultMetaData = resultSet.getMetaData();
-		if (resultMetaData.getColumnCount() != fieldsArr.size()) {
-			throw new Exception(
-					"The field count in data source ["+ resultMetaData.getColumnCount() +"] is not equal to field count in dictionary [" + fieldsArr.size() + "]");
-		}
-		int i;
-		for (i = 1; i <= resultMetaData.getColumnCount(); i++) {
-			if (resultMetaData.getColumnName(i) != fieldsArr.get(i-1).fieldHandler.fieldName) {
-				throw new Exception("The field number [" + i
-						+ "] in data source have to have the name ["
-						+ fieldsArr.get(i-1).fieldHandler.fieldName + "] instead of [" + resultMetaData.getColumnName(i) + "]");
-			}
-		}
 		// Загрузим данные в словарь
 		String tableName = dictionaryDescriptor.GetTableName();
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
@@ -64,15 +49,17 @@ public class DictionaryInstance extends ObjectInstance {
 			ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 			ArrayList<FieldContentHandler> keyFieldsContArr = new ArrayList<FieldContentHandler>();
 			boolean needToUpdate = false;
+			int i;
 			for (i = 1; i <= resultMetaData.getColumnCount(); i++) {
 				// При необходимости исключим загрузку автоинкрементного поля (serial)
 				if (!loadParams.loadSequenceFields) {
 					if (resultMetaData.isAutoIncrement(i)) continue;
 				}
-				fieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i-1).fieldHandler.fieldName, resultSet.getObject(i)));
+				fieldsContArr.add(FieldContentHandler.createFieldContent(dataLoader.getFieldName(i-1), resultSet.getObject(i)));
 				// Опираясь на поле синхронизации, проверим добавлять новую запись или обновлять существующую
-				if (fieldsArr.get(i-1).fieldHandler.fieldName == loadParams.syncFieldName) {
-					keyFieldsContArr.add(FieldContentHandler.createFieldContent(fieldsArr.get(i-1).fieldHandler.fieldName, resultSet.getObject(i)));
+				if (dataLoader.getFieldName(i-1) == loadParams.syncFieldName) {
+					keyFieldsContArr.add(FieldContentHandler.createFieldContent(dataLoader.getFieldName(i-1), resultSet.getObject(i)));
+					needToUpdate = tableContent.ValueExists(keyFieldsContArr);
 				}
 			}
 			if (needToUpdate) tableContent.UpdateRecord(fieldsContArr, keyFieldsContArr);

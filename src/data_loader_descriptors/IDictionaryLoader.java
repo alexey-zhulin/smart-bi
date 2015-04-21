@@ -6,4 +6,7 @@ public interface IDictionaryLoader {
 
 	// Функция получения курсора данных
 	public ResultSet getData() throws Exception;
+	
+	// Функция получения наименования поля таблицы справочника
+	public String getFieldName(int position) throws Exception;
 }

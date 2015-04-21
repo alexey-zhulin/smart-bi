@@ -1,9 +1,13 @@
 package business_objects;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 import data_loader_descriptors.LoadParams;
+import data_loader_descriptors.LoadStructure;
+import data_loader_descriptors.LoadStructure.FieldTypes;
 import data_loaders.DictionaryLoaderFromText;
 import object_descriptors.DictionaryDescriptor;
 import object_descriptors.MetabaseDescriptor;
@@ -27,11 +31,14 @@ public class test {
 		DictionaryLoaderFromText loaderFromText = new DictionaryLoaderFromText();
 		loaderFromText.delimeter = ";";
 		loaderFromText.fileName = fileName;
-		List<String> headers = new ArrayList<String>();
-		headers.add("id");
-		headers.add("name");
-		headers.add("parent_id");
-		headers.add("code_1c");
+		//loaderFromText.startRow = 2;
+		//loaderFromText.endRow = 3;
+		// Определим структуру полей загрузчика
+		List<LoadStructure> headers = new ArrayList<LoadStructure>();
+		headers.add(LoadStructure.createLoadStructure("id", FieldTypes.Int, dictionaryDescriptor.FieldById("id"), 0));
+		headers.add(LoadStructure.createLoadStructure("name", FieldTypes.String, dictionaryDescriptor.FieldById("name"), 1));
+		//headers.add(LoadStructure.createLoadStructure("parent_id", FieldTypes.Int, dictionaryDescriptor.FieldById("parent_id"), 2));
+		headers.add(LoadStructure.createLoadStructure("code_1c", FieldTypes.String, dictionaryDescriptor.FieldById("code_1c"), 3));
 		loaderFromText.headers = headers;
 		// Определим параметры загрузки
 		LoadParams loadParams = new LoadParams();
@@ -84,8 +91,10 @@ public class test {
 		measure_units.CreateIndexForFields(indexFields, "idx_units_code_1c",
 				true);
 		// Загрузим данные
+		//String fileName = "E:\\tmp\\Книга1.csv";
 		String fileName = "E:\\tmp\\data_for_units.txt";
 		LoadDictionary(connection, measure_units, fileName);
+		//LoadDictionary(connection, measure_units, fileName);
 		// Каталог показателей "Динамика продаж номенклатуры"
 		RubricatorDescriptor rubricator = new RubricatorDescriptor(connection);
 		rubricator.object_name = "Динамика продаж номенклатуры";
@@ -111,6 +120,8 @@ public class test {
 		datebase = "testdb";
 		user = "postgres";
 		password = "postgres";
+		Instant t1, t2;
+		t1 = Instant.now();
 		try {
 			ConnectionHandler connection = new ConnectionHandler(server, port,
 					datebase, user, password);
@@ -126,7 +137,8 @@ public class test {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		System.out.println("Operation completed...");
+		t2 = Instant.now();
+		System.out.println("Operation completed..." + Duration.between(t1, t2).toMillis() + " ms");
 	}
 
 }

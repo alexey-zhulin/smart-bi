@@ -116,23 +116,23 @@ public class TableContentHandler {
 		for (i = 0; i < primaryKeyArr.size(); i++) {
 			Object curObject = primaryKeyArr.get(i).fieldValue;
 			if (curObject == null) {
-				statement.setNull(i + 1, Types.NULL);
+				statement.setNull(i + fieldContentArr.size() + 1, Types.NULL);
 			}
 			else {
 				if (curObject.getClass().equals(Integer.class)) {
-					statement.setInt(i + 1, (int)primaryKeyArr.get(i).fieldValue);
+					statement.setInt(i + fieldContentArr.size() + 1, (int)primaryKeyArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(String.class)) {
-					statement.setString(i + 1, (String)primaryKeyArr.get(i).fieldValue);
+					statement.setString(i + fieldContentArr.size() + 1, (String)primaryKeyArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(Boolean.class)) {
-					statement.setBoolean(i + 1, (Boolean)primaryKeyArr.get(i).fieldValue);
+					statement.setBoolean(i + fieldContentArr.size() + 1, (Boolean)primaryKeyArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(Double.class)) {
-					statement.setDouble(i + 1, (Double)primaryKeyArr.get(i).fieldValue);
+					statement.setDouble(i + fieldContentArr.size() + 1, (Double)primaryKeyArr.get(i).fieldValue);
 				}
 				if (curObject.getClass().equals(Date.class)) {
-					statement.setDate(i + 1, (Date)primaryKeyArr.get(i).fieldValue);
+					statement.setDate(i + fieldContentArr.size() + 1, (Date)primaryKeyArr.get(i).fieldValue);
 				}
 			}
 		}
@@ -144,7 +144,7 @@ public class TableContentHandler {
 	// Функция возвращает, существует ли запись в таблице с указанным значением ключевого поля
 	public boolean ValueExists(ArrayList<FieldContentHandler> primaryKeyArr) throws SQLException {
 		if (primaryKeyArr.size() == 0) return false;
-		String queryText = "select * from " + tableName + "\n" + "(";
+		String queryText = "select * from " + tableName + "\n";
 		queryText = queryText + "where\n";
 		int i;
 		for (i = 0; i < primaryKeyArr.size(); i++) {

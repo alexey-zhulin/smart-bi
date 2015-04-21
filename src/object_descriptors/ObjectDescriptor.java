@@ -46,6 +46,16 @@ public class ObjectDescriptor {
 		return id;
 	}
 	
+	// Функция возвращает поле по его идентификатору в базе (наименованию поля в таблице)
+	public ObjectFieldDescriptor FieldById(String id) {
+		int i;
+		for (i = 0; i < fields.size(); i ++) {
+			if (fields.get(i).fieldHandler.fieldName.toLowerCase() == id.toLowerCase()) return fields.get(i);
+		}
+		// Если мы здесь - значит ничего не нашли
+		return null;
+	}
+	
 	// Энумератор для наименования префикса таблиц с данными
 	public enum DataTablePrefixes {
 		Dictionary("_d")
