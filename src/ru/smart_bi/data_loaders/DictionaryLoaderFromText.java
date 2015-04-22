@@ -32,27 +32,26 @@ public class DictionaryLoaderFromText extends DictionaryLoader implements IDicti
 		// ѕредварительно отсортируем структуру загрузки (headers) в соответствии с позицией в источнике (positionInSource)
 		HeadersSorter();
 		MockResultSet mockResultSet = new MockResultSet("textResultSet");
-		// «аполним структуру
-		int i;
-		for (i = 0; i < headers.size(); i++) {
+		// заполним структуру
+		for (int i = 0; i < headers.size(); i++) {
 			mockResultSet.addColumn(headers.get(i).linkedField.fieldHandler.fieldName);
 		}
 		// ќпределим кодировку
 		if (encoding == null) {
 			encoding = ENCODING_UTF_8;
 		}
-		// «аполним данные
+		// заполним данные
 		Path path = Paths.get(fileName);
 		Scanner scanner = new Scanner (path, encoding.name());
 		int lineNumber = 0;
 		while (scanner.hasNextLine()) {
 			Scanner sentence = new Scanner(scanner.nextLine());
 			lineNumber ++;
-			// Ќачальна¤ строка обработки определена - проверим, нужно ли загружать данную строку
+			// Начальная строка обработки определена - проверим, нужно ли загружать данную строку
 			if (startRow > 0) {
 				if (lineNumber < startRow) continue;
 			}
-			// ≈сли конечна¤ строка определена - проверим, не пора ли выйти
+			// Если конечная строка определена - проверим, не пора ли выйти
 			if (endRow > 0) {
 				if (lineNumber > endRow) break;
 			}
@@ -101,15 +100,6 @@ public class DictionaryLoaderFromText extends DictionaryLoader implements IDicti
 		}
 		scanner.close();
 		return mockResultSet;
-	}
-	
-	// ‘ункци¤ определ¤ет, нужно ли добавл¤ть значение данного пол¤ в выборку исход¤ из настройки headers
-	boolean NeedToAddValue(int position) {
-		int i;
-		for (i = 0; i < headers.size(); i ++) {
-			if (headers.get(i).positionInSource == position) return true;
-		}
-		return false;
 	}
 
 }

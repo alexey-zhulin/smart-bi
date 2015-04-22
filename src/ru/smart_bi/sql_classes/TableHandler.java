@@ -38,8 +38,7 @@ public class TableHandler {
 		}
 		// Скрипт создания самой таблицы
 		String queryText = "create table " + tableName + "(\n";
-		int i;
-		for (i = 0; i < fieldsArr.size(); i++) {
+		for (int i = 0; i < fieldsArr.size(); i++) {
 			queryText = queryText + fieldsArr.get(i).fieldName + " "
 					+ fieldsArr.get(i).fieldType + " "
 					+ ((fieldsArr.get(i).isNull) ? "NULL" : "NOT NULL")
@@ -51,22 +50,22 @@ public class TableHandler {
 		// Подготовим поля для включения в PK, опираясь на поле primaryKeyIndex,
 		// как параметр включения в массив и индекс сортировки
 		Map<Integer, FieldHandler> fieldsMap = new TreeMap<Integer, FieldHandler>();
-		for (i = 0; i < fieldsArr.size(); i++) {
+		for (int i = 0; i < fieldsArr.size(); i++) {
 			if (fieldsArr.get(i).primaryKeyIndex > 0) {
 				fieldsMap.put(fieldsArr.get(i).primaryKeyIndex, fieldsArr.get(i));
 			}
 		}
 		// Если в массиве полей есть элементы, то сформируем по ним скрипт для
 		// первичного ключа
-		i = 0;
+		int pos = 0;
 		if (fieldsMap.size() > 0) {
 			queryText = queryText + "alter table " + tableName
 					+ " add constraint pk_" + tableName + " primary key (";
 			for (Map.Entry<Integer, FieldHandler> entry : fieldsMap.entrySet()) {
-				i++;
+				pos ++;
 				FieldHandler fieldHanler = (FieldHandler) entry.getValue();
 				queryText = queryText + fieldHanler.fieldName
-						+ ((fieldsMap.size() > i) ? "," : "");
+						+ ((fieldsMap.size() > pos) ? "," : "");
 			}
 			queryText = queryText + ");\n";
 		}
@@ -92,13 +91,12 @@ public class TableHandler {
 		// Подготовим поля для включения в индекс, опираясь на поле
 		// indexPosition, как параметр включения в массив и индекс сортировки
 		Map<Integer, IndexHandler> fieldsMap = new TreeMap<Integer, IndexHandler>();
-		int i;
-		for (i = 0; i < fieldsArr.size(); i++) {
+		for (int i = 0; i < fieldsArr.size(); i++) {
 			fieldsMap.put(fieldsArr.get(i).indexPosition, fieldsArr.get(i));
 		}
 		// Если в массиве полей есть элементы, то сформируем по ним скрипт для
 		// первичного ключа
-		i = 0;
+		int pos = 0;
 		if (fieldsMap.size() > 0) {
 			// Удалим индекс с таким же наименованием, если был
 			String queryText = "drop index if exists " + index_name;
@@ -109,10 +107,10 @@ public class TableHandler {
 			queryText = "create " + ((isUnique) ? "unique" : "") + " index "
 					+ index_name + " on " + tableName + "(\n";
 			for (Map.Entry<Integer, IndexHandler> entry : fieldsMap.entrySet()) {
-				i++;
+				pos ++;
 				IndexHandler fieldHanler = (IndexHandler) entry.getValue();
 				queryText = queryText + fieldHanler.fieldName
-						+ ((fieldsMap.size() > i) ? "," : "");
+						+ ((fieldsMap.size() > pos) ? "," : "");
 			}
 			queryText = queryText + ");\n";
 			// Выполним скрипт

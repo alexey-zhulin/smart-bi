@@ -27,8 +27,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		// Создадим таблицу для хранения данных
 		TableHandler tableHandler = new TableHandler(dictTableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
-		int i;
-		for (i = 0; i < fields.size(); i++) {
+		for (int i = 0; i < fields.size(); i++) {
 			// Добавляем только обычные поля, чтобы исключить ошибочно добавленные поля другого типа
 			if (fields.get(i).fieldType == ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular) {
 				fieldsArr.add(fields.get(i).fieldHandler);
@@ -49,7 +48,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		tableContent.AddRecord(fieldsContArr);
 		// Запишем информацию о полях объекта в таблице ObjectFields
 		tableContent.SetTableName("ObjectFields");
-		for (i = 0; i < fields.size(); i++) {
+		for (int i = 0; i < fields.size(); i++) {
 			fieldsContArr = new ArrayList<FieldContentHandler>();
 			fieldsContArr.add(FieldContentHandler.createFieldContent("field_alias", fields.get(i).fieldAlias));
 			fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", dictTableName));
@@ -77,9 +76,8 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 	// Процедура создает индекс по выбранным полям справочника
 	public void CreateIndexForFields(ArrayList<ObjectFieldDescriptor> indexFields, String index_name, boolean isUnique) throws SQLException {
 		if (indexFields.size() == 0) return;
-		int i;
 		ArrayList<IndexHandler> indexList = new ArrayList<IndexHandler>();
-		for (i = 0; i < indexFields.size(); i++) {
+		for (int i = 0; i < indexFields.size(); i++) {
 			indexList.add(IndexHandler.createIndexField(indexFields.get(i).fieldHandler.fieldName, i));
 		}
 		TableHandler tableHandler = new TableHandler(GetTableName(), connection);

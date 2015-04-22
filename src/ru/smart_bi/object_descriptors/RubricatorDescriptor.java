@@ -30,8 +30,7 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		tableHandler.SetTableName(factTableName);
 		fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("fact_id", "serial", false, 1));
-		int i;
-		for (i = 0; i < fields.size(); i++) {
+		for (int i = 0; i < fields.size(); i++) {
 			// Добавляем только обычные поля
 			if (fields.get(i).fieldType == ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular) {
 				fieldsArr.add(fields.get(i).fieldHandler); // Добавляем поля из структуры каталога
@@ -39,7 +38,7 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		}
 		// Добавим поле с единицей измерения
 		boolean fieldWasInserted = false;
-		for (i = 0; i < fields.size(); i++) {
+		for (int i = 0; i < fields.size(); i++) {
 			// Добавляем только обычные поля
 			if ((fields.get(i).fieldType == ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.RubrUnit) & (!fieldWasInserted)) {
 				fieldsArr.add(fields.get(i).fieldHandler); // Добавляем поля из структуры каталога
@@ -114,7 +113,7 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		tableContent.AddRecord(fieldsContArr);
 		// Запишем информацию о полях объекта в таблице ObjectFields (все пользовательские поля находятся в таблице фактов)
 		tableContent.SetTableName("ObjectFields");
-		for (i = 0; i < fields.size(); i++) {
+		for (int i = 0; i < fields.size(); i++) {
 			fieldsContArr = new ArrayList<FieldContentHandler>();
 			fieldsContArr.add(FieldContentHandler.createFieldContent("field_alias", fields.get(i).fieldAlias));
 			fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", factTableName));

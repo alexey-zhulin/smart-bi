@@ -31,8 +31,7 @@ public class MetabaseDescriptor {
 		tableList.add("ObjectFieldTypes");
 		tableList.add("CalendarLevels");
 		// Удалим выбранные таблицы
-		int i;
-		for (i = 0; i < tableList.size(); i++) {
+		for (int i = 0; i < tableList.size(); i++) {
 			tableHandler.SetTableName(tableList.get(i));
 			tableHandler.DropTable();
 		}
@@ -42,7 +41,7 @@ public class MetabaseDescriptor {
 		// Соберем секвенции для удаления
 		sequenceList.add("TableName_Seq");
 		// Удалим секвенции
-		for (i = 0; i < sequenceList.size(); i++) {
+		for (int i = 0; i < sequenceList.size(); i++) {
 			sequenceHandler.SetSequenceName(sequenceList.get(i));
 			sequenceHandler.DropSequence();
 		}

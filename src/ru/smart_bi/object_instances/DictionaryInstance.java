@@ -24,8 +24,7 @@ public class DictionaryInstance extends ObjectInstance {
 		ArrayList<ObjectFieldDescriptor> fieldsArr = dictionaryDescriptor.fields;
 		// Сформируем скрипт, для получения данных объекта
 		String queryText = "select ";
-		int i;
-		for (i = 0; i < fieldsArr.size(); i++) {
+		for (int i = 0; i < fieldsArr.size(); i++) {
 			if (i == (fieldsArr.size() - 1)) {
 				queryText = queryText + fieldsArr.get(i).fieldHandler + ", ";
 			} else {
@@ -49,8 +48,7 @@ public class DictionaryInstance extends ObjectInstance {
 			ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 			ArrayList<FieldContentHandler> keyFieldsContArr = new ArrayList<FieldContentHandler>();
 			boolean needToUpdate = false;
-			int i;
-			for (i = 1; i <= resultMetaData.getColumnCount(); i++) {
+			for (int i = 1; i <= resultMetaData.getColumnCount(); i++) {
 				// При необходимости исключим загрузку автоинкрементного поля (serial)
 				if (!loadParams.loadSequenceFields) {
 					if (resultMetaData.isAutoIncrement(i)) continue;

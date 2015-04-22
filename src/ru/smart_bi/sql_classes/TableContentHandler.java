@@ -24,15 +24,14 @@ public class TableContentHandler {
 	public void AddRecord(ArrayList<FieldContentHandler> fieldContentArr)
 			throws SQLException {
 		String queryText = "insert into " + tableName + "\n" + "(";
-		int i;
-		for (i = 0; i < fieldContentArr.size(); i++) {
+		for (int i = 0; i < fieldContentArr.size(); i++) {
 			queryText = queryText + fieldContentArr.get(i).fieldName
 					+ (((fieldContentArr.size() - 1) > i) ? "," : "");
 		}
 		queryText = queryText + ")\n";
 		queryText = queryText + "values\n";
 		queryText = queryText + "(";
-		for (i = 0; i < fieldContentArr.size(); i++) {
+		for (int i = 0; i < fieldContentArr.size(); i++) {
 			queryText = queryText + "? "
 					+ (((fieldContentArr.size() - 1) > i) ? "," : "");
 		}
@@ -40,7 +39,7 @@ public class TableContentHandler {
 		PreparedStatement statement = null;
 		statement = connectionHandler.connection.prepareStatement(queryText);
 		// Подготовим параметры
-		for (i = 0; i < fieldContentArr.size(); i++) {
+		for (int i = 0; i < fieldContentArr.size(); i++) {
 			Object curObject = fieldContentArr.get(i).fieldValue;
 			if (curObject == null) {
 				statement.setNull(i + 1, Types.NULL);
@@ -74,14 +73,13 @@ public class TableContentHandler {
 		
 		String queryText = "update " + tableName + "\n";
 		queryText = queryText + "set\n";
-		int i;
-		for (i = 0; i < fieldContentArr.size(); i++) {
+		for (int i = 0; i < fieldContentArr.size(); i++) {
 			queryText = queryText + fieldContentArr.get(i).fieldName + " = ?"
 					+ (((fieldContentArr.size() - 1) > i) ? ",\n" : "\n");
 		}
 		queryText = queryText + "\n";
 		queryText = queryText + "where\n";
-		for (i = 0; i < primaryKeyArr.size(); i++) {
+		for (int i = 0; i < primaryKeyArr.size(); i++) {
 			queryText = queryText + primaryKeyArr.get(i).fieldName + " = ?"
 					+ (((primaryKeyArr.size() - 1) > i) ? "and \n" : "\n");
 			
@@ -89,7 +87,7 @@ public class TableContentHandler {
 		PreparedStatement statement = null;
 		statement = connectionHandler.connection.prepareStatement(queryText);
 		// Подготовим параметры (изменяемые значения)
-		for (i = 0; i < fieldContentArr.size(); i++) {
+		for (int i = 0; i < fieldContentArr.size(); i++) {
 			Object curObject = fieldContentArr.get(i).fieldValue;
 			if (curObject == null) {
 				statement.setNull(i + 1, Types.NULL);
@@ -113,7 +111,7 @@ public class TableContentHandler {
 			}
 		}
 		// Подготовим параметры (первичный ключ)
-		for (i = 0; i < primaryKeyArr.size(); i++) {
+		for (int i = 0; i < primaryKeyArr.size(); i++) {
 			Object curObject = primaryKeyArr.get(i).fieldValue;
 			if (curObject == null) {
 				statement.setNull(i + fieldContentArr.size() + 1, Types.NULL);
@@ -146,8 +144,7 @@ public class TableContentHandler {
 		if (primaryKeyArr.size() == 0) return false;
 		String queryText = "select * from " + tableName + "\n";
 		queryText = queryText + "where\n";
-		int i;
-		for (i = 0; i < primaryKeyArr.size(); i++) {
+		for (int i = 0; i < primaryKeyArr.size(); i++) {
 			queryText = queryText + primaryKeyArr.get(i).fieldName + " = ?"
 					+ (((primaryKeyArr.size() - 1) > i) ? "and \n" : "\n");
 			
