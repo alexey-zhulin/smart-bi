@@ -25,89 +25,89 @@ public class test {
 	private static String user;
 	private static String password;
 
-	// Процедура загрузки единиц измерения 
+	// РџСЂРѕС†РµРґСѓСЂР° Р·Р°РіСЂСѓР·РєРё РµРґРёРЅРёС† РёР·РјРµСЂРµРЅРёСЏ 
 	static void LoadDictionary(ConnectionHandler connection, DictionaryDescriptor dictionaryDescriptor, String fileName, boolean loadSequenceFields) throws Exception {
-		// Подготовим загрузчик
+		// РџРѕРґРіРѕС‚РѕРІРёРј Р·Р°РіСЂСѓР·С‡РёРє
 		DictionaryLoaderFromText loaderFromText = new DictionaryLoaderFromText();
 		loaderFromText.delimeter = ";";
 		loaderFromText.fileName = fileName;
 		//loaderFromText.startRow = 2;
 		//loaderFromText.endRow = 3;
-		// Определим структуру полей загрузчика
+		// РћРїСЂРµРґРµР»РёРј СЃС‚СЂСѓРєС‚СѓСЂСѓ РїРѕР»РµР№ Р·Р°РіСЂСѓР·С‡РёРєР°
 		List<LoadStructure> headers = new ArrayList<LoadStructure>();
 		headers.add(LoadStructure.createLoadStructure(FieldTypes.String, dictionaryDescriptor.FieldById("code_1c"), 3));
 		headers.add(LoadStructure.createLoadStructure(FieldTypes.Int, dictionaryDescriptor.FieldById("id"), 0));
 		headers.add(LoadStructure.createLoadStructure(FieldTypes.String, dictionaryDescriptor.FieldById("name"), 1));
 		headers.add(LoadStructure.createLoadStructure(FieldTypes.Int, dictionaryDescriptor.FieldById("parent_id"), 2));
 		loaderFromText.headers = headers;
-		// Определим параметры загрузки
+		// РћРїСЂРµРґРµР»РёРј РїР°СЂР°РјРµС‚СЂС‹ Р·Р°РіСЂСѓР·РєРё
 		LoadParams loadParams = new LoadParams();
 		loadParams.loadSequenceFields = loadSequenceFields;
 		loadParams.syncFieldName = "code_1c";
-		// Создадим instance словаря для загрузки
+		// РЎРѕР·РґР°РґРёРј instance СЃР»РѕРІР°СЂСЏ РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 		DictionaryInstance dictionaryInstance = new DictionaryInstance(connection);
 		dictionaryInstance.dictionaryDescriptor = dictionaryDescriptor;
 		dictionaryInstance.LoadData(loaderFromText, loadParams);
 	}
 	
 	static void CreateObjects(ConnectionHandler connection) throws Exception {
-		// Справочник "Группы номенклатуры"
+		// РЎРїСЂР°РІРѕС‡РЅРёРє "Р“СЂСѓРїРїС‹ РЅРѕРјРµРЅРєР»Р°С‚СѓСЂС‹"
 		DictionaryDescriptor goods_groups = new DictionaryDescriptor(connection);
-		goods_groups.object_name = "Группы номенклатуры";
+		goods_groups.object_name = "Р“СЂСѓРїРїС‹ РЅРѕРјРµРЅРєР»Р°С‚СѓСЂС‹";
 		goods_groups.ext_id = "GROUP_OF_GOODS";
 		ObjectFieldDescriptor code_1cField = ObjectFieldDescriptor.createField(
-				"Код 1С",
+				"РљРѕРґ 1РЎ",
 				FieldHandler.createField("code_1c", "varchar(50)", true, 0),
 				false,
 				ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null);
 		goods_groups.fields.add(code_1cField);
 		goods_groups.CreateDictionary();
-		// Добавим индекс по полю "code_1c"
+		// Р”РѕР±Р°РІРёРј РёРЅРґРµРєСЃ РїРѕ РїРѕР»СЋ "code_1c"
 		ArrayList<ObjectFieldDescriptor> indexFields = new ArrayList<ObjectFieldDescriptor>();
 		indexFields.add(code_1cField);
 		goods_groups.CreateIndexForFields(indexFields,
 				"idx_group_of_goods_code_1c", true);
-		// Справочник "Единицы измерения"
+		// РЎРїСЂР°РІРѕС‡РЅРёРє "Р•РґРёРЅРёС†С‹ РёР·РјРµСЂРµРЅРёСЏ"
 		DictionaryDescriptor measure_units = new DictionaryDescriptor(
 				connection);
-		measure_units.object_name = "Единицы измерения";
+		measure_units.object_name = "Р•РґРёРЅРёС†С‹ РёР·РјРµСЂРµРЅРёСЏ";
 		measure_units.ext_id = "UNITS";
 		code_1cField = ObjectFieldDescriptor.createField(
-				"Код 1С",
+				"РљРѕРґ 1РЎ",
 				FieldHandler.createField("code_1c", "varchar(50)", true, 0),
 				false,
 				ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null);
 		measure_units.fields.add(ObjectFieldDescriptor.createField(
-						"Код 1С",
+						"РљРѕРґ 1РЎ",
 						FieldHandler.createField("code_1c", "varchar(50)",
 								true, 0),
 						false,
 						ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular,
 						null));
 		measure_units.CreateDictionary();
-		// Добавим индекс по полю "code_1c"
+		// Р”РѕР±Р°РІРёРј РёРЅРґРµРєСЃ РїРѕ РїРѕР»СЋ "code_1c"
 		indexFields = new ArrayList<ObjectFieldDescriptor>();
 		indexFields.add(code_1cField);
 		measure_units.CreateIndexForFields(indexFields, "idx_units_code_1c",
 				true);
-		// Загрузим данные
-		String fileName = "E:\\tmp\\Книга1.csv";
+		// Р—Р°РіСЂСѓР·РёРј РґР°РЅРЅС‹Рµ
+		String fileName = "E:\\tmp\\РљРЅРёРіР°1.csv";
 		LoadDictionary(connection, measure_units, fileName, false);
 		//String fileName = "E:\\tmp\\data_for_units.txt";
 		//LoadDictionary(connection, measure_units, fileName, true);
-		// Каталог показателей "Динамика продаж номенклатуры"
+		// РљР°С‚Р°Р»РѕРі РїРѕРєР°Р·Р°С‚РµР»РµР№ "Р”РёРЅР°РјРёРєР° РїСЂРѕРґР°Р¶ РЅРѕРјРµРЅРєР»Р°С‚СѓСЂС‹"
 		RubricatorDescriptor rubricator = new RubricatorDescriptor(connection);
-		rubricator.object_name = "Динамика продаж номенклатуры";
+		rubricator.object_name = "Р”РёРЅР°РјРёРєР° РїСЂРѕРґР°Р¶ РЅРѕРјРµРЅРєР»Р°С‚СѓСЂС‹";
 		rubricator.ext_id = "SALE_DINAMICS";
-		// Добавим разрез по группам номенклатуры
+		// Р”РѕР±Р°РІРёРј СЂР°Р·СЂРµР· РїРѕ РіСЂСѓРїРїР°Рј РЅРѕРјРµРЅРєР»Р°С‚СѓСЂС‹
 		rubricator.fields.add(ObjectFieldDescriptor.createField(
-				"Группа номенклатуры",
+				"Р“СЂСѓРїРїР° РЅРѕРјРµРЅРєР»Р°С‚СѓСЂС‹",
 				FieldHandler.createField("group_id", "int", true, 0), false,
 				ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular,
 				goods_groups.GetTableName()));
-		// Добавим единицу измерения
+		// Р”РѕР±Р°РІРёРј РµРґРёРЅРёС†Сѓ РёР·РјРµСЂРµРЅРёСЏ
 		rubricator.fields.add(ObjectFieldDescriptor.createField(
-				"Единица измерения",
+				"Р•РґРёРЅРёС†Р° РёР·РјРµСЂРµРЅРёСЏ",
 				FieldHandler.createField("unit_id", "int", true, 0), false,
 				ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.RubrUnit,
 				measure_units.GetTableName()));
