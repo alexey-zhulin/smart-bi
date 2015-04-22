@@ -8,7 +8,7 @@ import java.util.TreeMap;
 public class DictionaryLoader implements IDictionaryLoader {
 	public List<LoadStructure> headers;
 	
-	// Процедура сортировки полей
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕСЂС‚РёСЂРѕРІРєРё РїРѕР»РµР№
 	protected void HeadersSorter() {
 		Map<Integer, LoadStructure> headersMap = new TreeMap<Integer, LoadStructure>();
 		int i;

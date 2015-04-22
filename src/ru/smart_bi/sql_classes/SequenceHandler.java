@@ -8,30 +8,30 @@ public class SequenceHandler {
 	String sequenceName;
 	ConnectionHandler connectionHandler;
 
-	// Инициализация объекта
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р°
 	public SequenceHandler(String sequenceName, ConnectionHandler connectionHandler) {
 		this.sequenceName = sequenceName;
 		this.connectionHandler = connectionHandler;
 	}
 	
-	// Создание секвенции
+	// РЎРѕР·РґР°РЅРёРµ СЃРµРєРІРµРЅС†РёРё
 	public void CreateSequence() throws SQLException {
 		String queryText = "CREATE SEQUENCE " + sequenceName;
 		connectionHandler.ExecuteCommand(queryText);
 	}
 	
-	// Удаление секвенции
+	// РЈРґР°Р»РµРЅРёРµ СЃРµРєРІРµРЅС†РёРё
 	public void DropSequence() throws SQLException {
 		String queryText = "DROP SEQUENCE IF EXISTS " + sequenceName;
 		connectionHandler.ExecuteCommand(queryText);
 	}
 
-	// Изменение имени секвенции для переключения на другую
+	// РР·РјРµРЅРµРЅРёРµ РёРјРµРЅРё СЃРµРєРІРµРЅС†РёРё РґР»СЏ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РЅР° РґСЂСѓРіСѓСЋ
 	public void SetSequenceName(String sequenceName) {
 		this.sequenceName = sequenceName;
 	}
 	
-	// Получение следующего значения из секвенции
+	// РџРѕР»СѓС‡РµРЅРёРµ СЃР»РµРґСѓСЋС‰РµРіРѕ Р·РЅР°С‡РµРЅРёСЏ РёР· СЃРµРєРІРµРЅС†РёРё
 	public int GetNextVal() throws SQLException {
 		int nextVal = 0;
 		String queryText = "SELECT nextval('" + sequenceName + "') as nextval;";

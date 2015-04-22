@@ -8,14 +8,14 @@ import java.util.ArrayList;
 public class ConnectionHandler {
 	Connection connection;
 
-	// При создании объекта инициализируем подключение
+	// РџСЂРё СЃРѕР·РґР°РЅРёРё РѕР±СЉРµРєС‚Р° РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ
 	public ConnectionHandler(String host, String port, String database,
 			String username, String password) throws SQLException,
 			ClassNotFoundException {
 		connection = Connect(host, port, database, username, password);
 	}
 
-	// Функция создания подключения
+	// Р¤СѓРЅРєС†РёСЏ СЃРѕР·РґР°РЅРёСЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ
 	public Connection Connect(String host, String port, String database,
 			String username, String password) throws SQLException,
 			ClassNotFoundException {
@@ -25,12 +25,12 @@ public class ConnectionHandler {
 		return connection;
 	}
 	
-	// Процедура закрытия подключения
+	// РџСЂРѕС†РµРґСѓСЂР° Р·Р°РєСЂС‹С‚РёСЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ
 	public void CloseConnection() throws SQLException {
 		connection.close();
 	}
 	
-	// Процедура выполнения SQL команды
+	// РџСЂРѕС†РµРґСѓСЂР° РІС‹РїРѕР»РЅРµРЅРёСЏ SQL РєРѕРјР°РЅРґС‹
 	public void ExecuteCommand(String queryText)
 			throws SQLException {
 		Statement statement = connection.createStatement();
@@ -38,16 +38,16 @@ public class ConnectionHandler {
 		statement.close();
 	}
 	
-	// Процедура получения курсора
+	// РџСЂРѕС†РµРґСѓСЂР° РїРѕР»СѓС‡РµРЅРёСЏ РєСѓСЂСЃРѕСЂР°
 	public ResultSet CreateResultSet(String queryText, ArrayList<FieldContentHandler> paramsArr) throws SQLException {
 		ResultSet resultSet = null;
-		if (paramsArr.size() == 0) { // Запрос без параметров
+		if (paramsArr.size() == 0) { // Р—Р°РїСЂРѕСЃ Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ
 			Statement statement = connection.createStatement();
 			resultSet = statement.executeQuery(queryText);
 		}
 		else {
 			PreparedStatement statement = connection.prepareStatement(queryText);
-			// Подготовим параметры
+			// РџРѕРґРіРѕС‚РѕРІРёРј РїР°СЂР°РјРµС‚СЂС‹
 			int i;
 			for (i = 0; i < paramsArr.size(); i++) {
 				Object curObject = paramsArr.get(i).fieldValue;

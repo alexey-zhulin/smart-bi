@@ -29,30 +29,30 @@ public class DictionaryLoaderFromText extends DictionaryLoader implements IDicti
 	
 	@Override
 	public ResultSet getData() throws Exception {
-		// Предварительно отсортируем структуру загрузки (headers) в соответствии с позицией в источнике (positionInSource)
+		// С•СЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ РѕС‚СЃРѕСЂС‚РёСЂСѓРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ Р·Р°РіСЂСѓР·РєРё (headers) РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РїРѕР·РёС†РёРµР№ РІ РёСЃС‚РѕС‡РЅРёРєРµ (positionInSource)
 		HeadersSorter();
 		MockResultSet mockResultSet = new MockResultSet("textResultSet");
-		// Заполним структуру
+		// В«Р°РїРѕР»РЅРёРј СЃС‚СЂСѓРєС‚СѓСЂСѓ
 		int i;
 		for (i = 0; i < headers.size(); i++) {
 			mockResultSet.addColumn(headers.get(i).linkedField.fieldHandler.fieldName);
 		}
-		// Определим кодировку
+		// СњРїСЂРµРґРµР»РёРј РєРѕРґРёСЂРѕРІРєСѓ
 		if (encoding == null) {
 			encoding = ENCODING_UTF_8;
 		}
-		// Заполним данные
+		// В«Р°РїРѕР»РЅРёРј РґР°РЅРЅС‹Рµ
 		Path path = Paths.get(fileName);
 		Scanner scanner = new Scanner (path, encoding.name());
 		int lineNumber = 0;
 		while (scanner.hasNextLine()) {
 			Scanner sentence = new Scanner(scanner.nextLine());
 			lineNumber ++;
-			// Начальная строка обработки определена - проверим, нужно ли загружать данную строку
+			// РЊР°С‡Р°Р»СЊРЅР°В¤ СЃС‚СЂРѕРєР° РѕР±СЂР°Р±РѕС‚РєРё РѕРїСЂРµРґРµР»РµРЅР° - РїСЂРѕРІРµСЂРёРј, РЅСѓР¶РЅРѕ Р»Рё Р·Р°РіСЂСѓР¶Р°С‚СЊ РґР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ
 			if (startRow > 0) {
 				if (lineNumber < startRow) continue;
 			}
-			// Если конечная строка определена - проверим, не пора ли выйти
+			// в‰€СЃР»Рё РєРѕРЅРµС‡РЅР°В¤ СЃС‚СЂРѕРєР° РѕРїСЂРµРґРµР»РµРЅР° - РїСЂРѕРІРµСЂРёРј, РЅРµ РїРѕСЂР° Р»Рё РІС‹Р№С‚Рё
 			if (endRow > 0) {
 				if (lineNumber > endRow) break;
 			}
@@ -88,7 +88,7 @@ public class DictionaryLoaderFromText extends DictionaryLoader implements IDicti
 						rowData.add(Boolean.parseBoolean(sentence.next()));
 						converted = true;
 					}
-					// Если не определили типизацию - добавим как строку
+					// в‰€СЃР»Рё РЅРµ РѕРїСЂРµРґРµР»РёР»Рё С‚РёРїРёР·Р°С†РёСЋ - РґРѕР±Р°РІРёРј РєР°Рє СЃС‚СЂРѕРєСѓ
 					if (!converted) {
 						rowData.add(value);
 					}
@@ -103,7 +103,7 @@ public class DictionaryLoaderFromText extends DictionaryLoader implements IDicti
 		return mockResultSet;
 	}
 	
-	// Функция определяет, нужно ли добавлять значение данного поля в выборку исходя из настройки headers
+	// вЂСѓРЅРєС†РёВ¤ РѕРїСЂРµРґРµР»В¤РµС‚, РЅСѓР¶РЅРѕ Р»Рё РґРѕР±Р°РІР»В¤С‚СЊ Р·РЅР°С‡РµРЅРёРµ РґР°РЅРЅРѕРіРѕ РїРѕР»В¤ РІ РІС‹Р±РѕСЂРєСѓ РёСЃС…РѕРґВ¤ РёР· РЅР°СЃС‚СЂРѕР№РєРё headers
 	boolean NeedToAddValue(int position) {
 		int i;
 		for (i = 0; i < headers.size(); i ++) {

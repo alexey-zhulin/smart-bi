@@ -1,10 +1,10 @@
 package ru.smart_bi.sql_classes;
 
 
-//Класс поля для формирования скрипта создания таблицы
+//РљР»Р°СЃСЃ РїРѕР»СЏ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ СЃРєСЂРёРїС‚Р° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹
 public class IndexHandler {
-	public String fieldName; // Наименование поля, входящего в индекс
-	public int indexPosition; // порядок вхождения в индекс 
+	public String fieldName; // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїРѕР»СЏ, РІС…РѕРґСЏС‰РµРіРѕ РІ РёРЅРґРµРєСЃ
+	public int indexPosition; // РїРѕСЂСЏРґРѕРє РІС…РѕР¶РґРµРЅРёСЏ РІ РёРЅРґРµРєСЃ 
 
 	public static IndexHandler createIndexField(String fieldName, int indexPosition) {
 		IndexHandler indexHandler = new IndexHandler();

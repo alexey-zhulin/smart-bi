@@ -8,12 +8,12 @@ import ru.smart_bi.sql_classes.*;
 
 public class MetabaseDescriptor {
 
-	// Процедура удаления структуры метабазы
+	// РџСЂРѕС†РµРґСѓСЂР° СѓРґР°Р»РµРЅРёСЏ СЃС‚СЂСѓРєС‚СѓСЂС‹ РјРµС‚Р°Р±Р°Р·С‹
 	public void DeleteMetabase(ConnectionHandler connection) throws SQLException {
-		// Удалим таблицы
+		// РЈРґР°Р»РёРј С‚Р°Р±Р»РёС†С‹
 		TableHandler tableHandler = new TableHandler("", connection);
 		ArrayList<String> tableList = new ArrayList<String>();
-		// Таблицы экземпляров объектов метабазы
+		// РўР°Р±Р»РёС†С‹ СЌРєР·РµРјРїР»СЏСЂРѕРІ РѕР±СЉРµРєС‚РѕРІ РјРµС‚Р°Р±Р°Р·С‹
 		tableHandler.SetTableName("ObjectTables");
 		if (tableHandler.TableExists()) {
 			String queryText = "select table_name from ObjectTables order by del_order";
@@ -23,32 +23,32 @@ public class MetabaseDescriptor {
 				tableList.add(resultSet.getString("table_name"));
 			}
 		}
-		// Базовые таблицы
+		// Р‘Р°Р·РѕРІС‹Рµ С‚Р°Р±Р»РёС†С‹
 		tableList.add("ObjectTables");
 		tableList.add("ObjectFields");
 		tableList.add("MetabaseObjects");
 		tableList.add("ObjectClasses");
 		tableList.add("ObjectFieldTypes");
 		tableList.add("CalendarLevels");
-		// Удалим выбранные таблицы
+		// РЈРґР°Р»РёРј РІС‹Р±СЂР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 		int i;
 		for (i = 0; i < tableList.size(); i++) {
 			tableHandler.SetTableName(tableList.get(i));
 			tableHandler.DropTable();
 		}
-		// Удалим секвенции
+		// РЈРґР°Р»РёРј СЃРµРєРІРµРЅС†РёРё
 		SequenceHandler sequenceHandler = new SequenceHandler("", connection);
 		ArrayList<String> sequenceList = new ArrayList<String>();
-		// Соберем секвенции для удаления
+		// РЎРѕР±РµСЂРµРј СЃРµРєРІРµРЅС†РёРё РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
 		sequenceList.add("TableName_Seq");
-		// Удалим секвенции
+		// РЈРґР°Р»РёРј СЃРµРєРІРµРЅС†РёРё
 		for (i = 0; i < sequenceList.size(); i++) {
 			sequenceHandler.SetSequenceName(sequenceList.get(i));
 			sequenceHandler.DropSequence();
 		}
 	}
 
-	// Процедура добаввляет запись в таблицу ObjectClasses
+	// РџСЂРѕС†РµРґСѓСЂР° РґРѕР±Р°РІРІР»СЏРµС‚ Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Сѓ ObjectClasses
 	void AddObjectClass(ConnectionHandler connection, int class_id, String class_name) throws SQLException {
 		String tableName = "ObjectClasses";
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
@@ -58,27 +58,27 @@ public class MetabaseDescriptor {
 		tableContent.AddRecord(fieldsContArr);
 	}
 	
-	// Процедура создания таблицы ObjectTables (таблицы, в которых хранятся данные объектов метабазы)
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ ObjectTables (С‚Р°Р±Р»РёС†С‹, РІ РєРѕС‚РѕСЂС‹С… С…СЂР°РЅСЏС‚СЃСЏ РґР°РЅРЅС‹Рµ РѕР±СЉРµРєС‚РѕРІ РјРµС‚Р°Р±Р°Р·С‹)
 	void CreateObjectTables(ConnectionHandler connection) throws SQLException {
-		// Создадим саму таблицу
+		// РЎРѕР·РґР°РґРёРј СЃР°РјСѓ С‚Р°Р±Р»РёС†Сѓ
 		String tableName = "ObjectTables";
 		TableHandler tableHandler = new TableHandler(tableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("table_id", "serial", false, 1));
 		fieldsArr.add(FieldHandler.createField("table_name", "text", false, 0));
-		fieldsArr.add(FieldHandler.createField("del_order", "integer", false, 0)); // Порядок расположения (важно в части удаления)
+		fieldsArr.add(FieldHandler.createField("del_order", "integer", false, 0)); // РџРѕСЂСЏРґРѕРє СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ (РІР°Р¶РЅРѕ РІ С‡Р°СЃС‚Рё СѓРґР°Р»РµРЅРёСЏ)
 		String tableComment = "Metabase object list table";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим уникальный индекс по наименованию
+		// РЎРѕР·РґР°РґРёРј СѓРЅРёРєР°Р»СЊРЅС‹Р№ РёРЅРґРµРєСЃ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ
 		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
 		indexfieldsArr.add(IndexHandler.createIndexField("table_name", 0));
 		tableHandler.CreateIndex(indexfieldsArr, "idx_table_name", true);
-		// Создадим constraint
+		// РЎРѕР·РґР°РґРёРј constraint
 		String tableTo = "MetabaseObjects";
 		tableHandler.CreateConstraint(tableTo, false);
 	}
 
-	// Процедура добаввляет запись в таблицу ObjectClasses
+	// РџСЂРѕС†РµРґСѓСЂР° РґРѕР±Р°РІРІР»СЏРµС‚ Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Сѓ ObjectClasses
 	void AddObjectFieldType(ConnectionHandler connection, int field_type_id, String field_type_name) throws SQLException {
 		String tableName = "ObjectFieldTypes";
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
@@ -88,9 +88,9 @@ public class MetabaseDescriptor {
 		tableContent.AddRecord(fieldsContArr);
 	}
 	
-	// Процедура создания таблицы ObjectFieldTypes (таблицы, в которой храним типы полей)
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ ObjectFieldTypes (С‚Р°Р±Р»РёС†С‹, РІ РєРѕС‚РѕСЂРѕР№ С…СЂР°РЅРёРј С‚РёРїС‹ РїРѕР»РµР№)
 	void CreateObjectFieldTypes(ConnectionHandler connection) throws SQLException {
-		// Создадим саму таблицу
+		// РЎРѕР·РґР°РґРёРј СЃР°РјСѓ С‚Р°Р±Р»РёС†Сѓ
 		String tableName = "ObjectFieldTypes";
 		TableHandler tableHandler = new TableHandler(tableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
@@ -98,12 +98,12 @@ public class MetabaseDescriptor {
 		fieldsArr.add(FieldHandler.createField("field_type_name", "text", false, 0));
 		String tableComment = "Object field list table";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Инициализируем значения
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Р·РЅР°С‡РµРЅРёСЏ
 		AddObjectFieldType(connection, FieldTypes.Regular.getValue(), "Regular");
 		AddObjectFieldType(connection, FieldTypes.RubrUnit.getValue(), "RubrUnit");
 	}
 	
-	// Процедура добавляет запись в таблицу AddObjectCalendarLevel
+	// РџСЂРѕС†РµРґСѓСЂР° РґРѕР±Р°РІР»СЏРµС‚ Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Сѓ AddObjectCalendarLevel
 	void AddObjectCalendarLevel(ConnectionHandler connection, int level_id, String level_name) throws SQLException {
 		String tableName = "CalendarLevels";
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
@@ -113,9 +113,9 @@ public class MetabaseDescriptor {
 		tableContent.AddRecord(fieldsContArr);
 	}
 	
-	// Процедура создания таблицы CalendarLevels (таблица, со значениями уровня календаря)
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ CalendarLevels (С‚Р°Р±Р»РёС†Р°, СЃРѕ Р·РЅР°С‡РµРЅРёСЏРјРё СѓСЂРѕРІРЅСЏ РєР°Р»РµРЅРґР°СЂСЏ)
 	void CreateCalendarLevels(ConnectionHandler connection) throws SQLException {
-		// Создадим саму таблицу
+		// РЎРѕР·РґР°РґРёРј СЃР°РјСѓ С‚Р°Р±Р»РёС†Сѓ
 		String tableName = "CalendarLevels";
 		TableHandler tableHandler = new TableHandler(tableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
@@ -123,7 +123,7 @@ public class MetabaseDescriptor {
 		fieldsArr.add(FieldHandler.createField("level_name", "text", false, 0));
 		String tableComment = "Calendar level dictionary";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Инициализируем значения
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Р·РЅР°С‡РµРЅРёСЏ
 		AddObjectCalendarLevel(connection, CalendarLevels.Day.getValue(), "Day");
 		AddObjectCalendarLevel(connection, CalendarLevels.Week.getValue(), "Week");
 		AddObjectCalendarLevel(connection, CalendarLevels.Month.getValue(), "Month");
@@ -131,9 +131,9 @@ public class MetabaseDescriptor {
 		AddObjectCalendarLevel(connection, CalendarLevels.Year.getValue(), "Year");
 	}
 	
-	// Процедура создания таблицы ObjectFields (таблицы, в которой храним структуру полей объекта)
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ ObjectFields (С‚Р°Р±Р»РёС†С‹, РІ РєРѕС‚РѕСЂРѕР№ С…СЂР°РЅРёРј СЃС‚СЂСѓРєС‚СѓСЂСѓ РїРѕР»РµР№ РѕР±СЉРµРєС‚Р°)
 	void CreateObjectFields(ConnectionHandler connection) throws SQLException {
-		// Создадим саму таблицу
+		// РЎРѕР·РґР°РґРёРј СЃР°РјСѓ С‚Р°Р±Р»РёС†Сѓ
 		String tableName = "ObjectFields";
 		TableHandler tableHandler = new TableHandler(tableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
@@ -144,23 +144,23 @@ public class MetabaseDescriptor {
 		fieldsArr.add(FieldHandler.createField("linked_table_name", "text", true, 0));
 		String tableComment = "Object field list table";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим constraint
+		// РЎРѕР·РґР°РґРёРј constraint
 		String tableTo = "MetabaseObjects";
 		tableHandler.CreateConstraint(tableTo, false);
 		tableTo = "ObjectFieldTypes";
 		tableHandler.CreateConstraint(tableTo, false);
 	}
 	
-	// Процедура создания секвенции для наименования таблиц с данными
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ СЃРµРєРІРµРЅС†РёРё РґР»СЏ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС† СЃ РґР°РЅРЅС‹РјРё
 	void CreateTableNameSeq(ConnectionHandler connection) throws SQLException {
 		String sequenceName = "TableName_Seq";
 		SequenceHandler sequenceHandler = new SequenceHandler(sequenceName, connection);
 		sequenceHandler.CreateSequence();
 	}
 	
-	// Процедура создания таблицы ObjectClasses (классов объектов метабазы)
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ ObjectClasses (РєР»Р°СЃСЃРѕРІ РѕР±СЉРµРєС‚РѕРІ РјРµС‚Р°Р±Р°Р·С‹)
 	void CreateObjectClasses(ConnectionHandler connection) throws SQLException {
-		// Создадим саму таблицу
+		// РЎРѕР·РґР°РґРёРј СЃР°РјСѓ С‚Р°Р±Р»РёС†Сѓ
 		String tableName = "ObjectClasses";
 		TableHandler tableHandler = new TableHandler(tableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
@@ -168,20 +168,20 @@ public class MetabaseDescriptor {
 		fieldsArr.add(FieldHandler.createField("class_name", "text", false, 0));
 		String tableComment = "Metabase classes dictionary";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим уникальный индекс по наименованию
+		// РЎРѕР·РґР°РґРёРј СѓРЅРёРєР°Р»СЊРЅС‹Р№ РёРЅРґРµРєСЃ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ
 		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
 		indexfieldsArr.add(IndexHandler.createIndexField("class_name", 0));
 		tableHandler.CreateIndex(indexfieldsArr, "idx_class_name", true);
-		// Инициализируем значения
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Р·РЅР°С‡РµРЅРёСЏ
 		AddObjectClass(connection, ObjectClasses.Undefined.getValue(), "Undefined");
 		AddObjectClass(connection, ObjectClasses.Folder.getValue(), "Folder");
 		AddObjectClass(connection, ObjectClasses.Dictionary.getValue(), "Dictionary");
 		AddObjectClass(connection, ObjectClasses.Rubricator.getValue(), "Rubricator");
 	}
 
-	// Процедура создания таблицы MetabaseObjects (объектов метабазы)
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ MetabaseObjects (РѕР±СЉРµРєС‚РѕРІ РјРµС‚Р°Р±Р°Р·С‹)
 	void CreateMetabaseObjects(ConnectionHandler connection) throws SQLException {
-		// Создадим саму таблицу
+		// РЎРѕР·РґР°РґРёРј СЃР°РјСѓ С‚Р°Р±Р»РёС†Сѓ
 		String tableName = "MetabaseObjects";
 		TableHandler tableHandler = new TableHandler(tableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
@@ -191,48 +191,48 @@ public class MetabaseDescriptor {
 		fieldsArr.add(FieldHandler.createField("ext_id", "char(100)", false, 0));
 		String tableComment = "Metabase object list";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим constraint
+		// РЎРѕР·РґР°РґРёРј constraint
 		String tableTo = "ObjectClasses";
 		tableHandler.CreateConstraint(tableTo, false);
-		// Сделаем constraint "на себя" (иерархическую таблицу) 
+		// РЎРґРµР»Р°РµРј constraint "РЅР° СЃРµР±СЏ" (РёРµСЂР°СЂС…РёС‡РµСЃРєСѓСЋ С‚Р°Р±Р»РёС†Сѓ) 
 		tableTo = "MetabaseObjects";
 		tableHandler.CreateConstraint(tableTo, false, "parent_object_id");
-		// Создадим уникальный индекс по ext_id
+		// РЎРѕР·РґР°РґРёРј СѓРЅРёРєР°Р»СЊРЅС‹Р№ РёРЅРґРµРєСЃ РїРѕ ext_id
 		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
 		indexfieldsArr.add(IndexHandler.createIndexField("ext_id", 0));
 		tableHandler.CreateIndex(indexfieldsArr, "idx_ext_id", true);
 	}
 	
-	// Процедура добавления записи в таблицу MetabaseObjects
+	// РџСЂРѕС†РµРґСѓСЂР° РґРѕР±Р°РІР»РµРЅРёСЏ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Сѓ MetabaseObjects
 	void AddMetabaseRecord(int object_id, String object_name, String ext_id) {
 		
 	}
 
-	// Процедура инициализации метабазы
+	// РџСЂРѕС†РµРґСѓСЂР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РјРµС‚Р°Р±Р°Р·С‹
 	public void CreateMetabase(ConnectionHandler connection, boolean recreate)
 			throws ClassNotFoundException, SQLException {
-		// Создадим подключение
+		// РЎРѕР·РґР°РґРёРј РїРѕРґРєР»СЋС‡РµРЅРёРµ
 		if (recreate) {
-			// При наличии опции "пересоздания" удалим старые таблицы метабазы
+			// РџСЂРё РЅР°Р»РёС‡РёРё РѕРїС†РёРё "РїРµСЂРµСЃРѕР·РґР°РЅРёСЏ" СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ С‚Р°Р±Р»РёС†С‹ РјРµС‚Р°Р±Р°Р·С‹
 			DeleteMetabase(connection);
 		}
-		// Создадим таблицу ObjectClasses
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ ObjectClasses
 		CreateObjectClasses(connection);
-		// Создадим таблицу MetabaseObjects
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ MetabaseObjects
 		CreateMetabaseObjects(connection);
-		// Создадим таблицу ObjectTables
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ ObjectTables
 		CreateObjectTables(connection);
-		// Создадим для нее sequence для наименований таблиц, содержащих хданные объектов
+		// РЎРѕР·РґР°РґРёРј РґР»СЏ РЅРµРµ sequence РґР»СЏ РЅР°РёРјРµРЅРѕРІР°РЅРёР№ С‚Р°Р±Р»РёС†, СЃРѕРґРµСЂР¶Р°С‰РёС… С…РґР°РЅРЅС‹Рµ РѕР±СЉРµРєС‚РѕРІ
 		CreateTableNameSeq(connection);
-		// Создадим таблицу с типами полей
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ СЃ С‚РёРїР°РјРё РїРѕР»РµР№
 		CreateObjectFieldTypes(connection);
-		// Создадим таблицу с уровнями календаря
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ СЃ СѓСЂРѕРІРЅСЏРјРё РєР°Р»РµРЅРґР°СЂСЏ
 		CreateCalendarLevels(connection);
-		// Создадим таблицу хранения полей объектов
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ С…СЂР°РЅРµРЅРёСЏ РїРѕР»РµР№ РѕР±СЉРµРєС‚РѕРІ
 		CreateObjectFields(connection);
 	}
 	
-	// Энумератор классов объектов метабазы
+	// Р­РЅСѓРјРµСЂР°С‚РѕСЂ РєР»Р°СЃСЃРѕРІ РѕР±СЉРµРєС‚РѕРІ РјРµС‚Р°Р±Р°Р·С‹
 	public enum ObjectClasses {
 		Undefined(0)
 		, Folder(1)
@@ -248,7 +248,7 @@ public class MetabaseDescriptor {
         public int getValue() { return value; }
 	}
 	
-	// Энумератор типов полей объектов метабазы
+	// Р­РЅСѓРјРµСЂР°С‚РѕСЂ С‚РёРїРѕРІ РїРѕР»РµР№ РѕР±СЉРµРєС‚РѕРІ РјРµС‚Р°Р±Р°Р·С‹
 	public enum FieldTypes {
 		Regular(0)
 		, RubrUnit(1);
@@ -262,7 +262,7 @@ public class MetabaseDescriptor {
         public int getValue() { return value; }
 	}
 	
-	// Энумератор уровней календаря
+	// Р­РЅСѓРјРµСЂР°С‚РѕСЂ СѓСЂРѕРІРЅРµР№ РєР°Р»РµРЅРґР°СЂСЏ
 	public enum CalendarLevels {
 		Day(0)
 		, Week(1)

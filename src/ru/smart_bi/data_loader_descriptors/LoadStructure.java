@@ -3,10 +3,10 @@ package ru.smart_bi.data_loader_descriptors;
 import ru.smart_bi.object_descriptors.ObjectFieldDescriptor;
 
 public class LoadStructure {
-	public FieldTypes field_type; // Типизация загружаемых данных
-	public ObjectFieldDescriptor linkedField; // Поле объекта, с которым
-												// связываем поле загрузчика
-	public int positionInSource; // Позиция в источнике
+	public FieldTypes field_type; // РўРёРїРёР·Р°С†РёСЏ Р·Р°РіСЂСѓР¶Р°РµРјС‹С… РґР°РЅРЅС‹С…
+	public ObjectFieldDescriptor linkedField; // РџРѕР»Рµ РѕР±СЉРµРєС‚Р°, СЃ РєРѕС‚РѕСЂС‹Рј
+												// СЃРІСЏР·С‹РІР°РµРј РїРѕР»Рµ Р·Р°РіСЂСѓР·С‡РёРєР°
+	public int positionInSource; // РџРѕР·РёС†РёСЏ РІ РёСЃС‚РѕС‡РЅРёРєРµ
 
 	public static LoadStructure createLoadStructure(FieldTypes field_type,
 			ObjectFieldDescriptor linkedField, int positionInSource)
@@ -18,7 +18,7 @@ public class LoadStructure {
 		return loadStructure;
 	}
 
-	// Энумератор типов полей структуры загрузки
+	// Р­РЅСѓРјРµСЂР°С‚РѕСЂ С‚РёРїРѕРІ РїРѕР»РµР№ СЃС‚СЂСѓРєС‚СѓСЂС‹ Р·Р°РіСЂСѓР·РєРё
 	public enum FieldTypes {
 		Int(0), Double(1), String(2), Date(3), Boolean(4);
 

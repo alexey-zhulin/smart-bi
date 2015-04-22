@@ -17,13 +17,13 @@ public class ObjectDescriptor {
 	public ObjectDescriptor(ConnectionHandler connection) {
 		this.connection = connection;
 		f_class_id = ObjectClasses.Undefined.getValue();
-		// Инициализируем массив полей
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РјР°СЃСЃРёРІ РїРѕР»РµР№
 		fields = new ArrayList<ObjectFieldDescriptor>();
 	}
 	
-	// Процедура создания объекта (регистрация в таблице MetabaseObjects)
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ РѕР±СЉРµРєС‚Р° (СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°Р±Р»РёС†Рµ MetabaseObjects)
 	public void CreateObject() throws SQLException {
-		// Добавим запись в таблицу MetabaseObjects
+		// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Сѓ MetabaseObjects
 		String tableName = "MetabaseObjects";
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
 		ArrayList<FieldContentHandler> fieldsArr = new ArrayList<FieldContentHandler>();
@@ -33,7 +33,7 @@ public class ObjectDescriptor {
 		tableContent.AddRecord(fieldsArr);
 	}
 	
-	// Процедура получения идентификатора объекта по внешнему идентификатору
+	// РџСЂРѕС†РµРґСѓСЂР° РїРѕР»СѓС‡РµРЅРёСЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° РѕР±СЉРµРєС‚Р° РїРѕ РІРЅРµС€РЅРµРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ
 	public int GetObjectId(String ext_id) throws SQLException {
 		int id = -1;
 		String queryText = "select object_id from MetabaseObjects where ext_id = ?";
@@ -46,17 +46,17 @@ public class ObjectDescriptor {
 		return id;
 	}
 	
-	// Функция возвращает поле по его идентификатору в базе (наименованию поля в таблице)
+	// Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»Рµ РїРѕ РµРіРѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ РІ Р±Р°Р·Рµ (РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ РїРѕР»СЏ РІ С‚Р°Р±Р»РёС†Рµ)
 	public ObjectFieldDescriptor FieldById(String id) {
 		int i;
 		for (i = 0; i < fields.size(); i ++) {
 			if (fields.get(i).fieldHandler.fieldName.toLowerCase() == id.toLowerCase()) return fields.get(i);
 		}
-		// Если мы здесь - значит ничего не нашли
+		// Р•СЃР»Рё РјС‹ Р·РґРµСЃСЊ - Р·РЅР°С‡РёС‚ РЅРёС‡РµРіРѕ РЅРµ РЅР°С€Р»Рё
 		return null;
 	}
 	
-	// Энумератор для наименования префикса таблиц с данными
+	// Р­РЅСѓРјРµСЂР°С‚РѕСЂ РґР»СЏ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ РїСЂРµС„РёРєСЃР° С‚Р°Р±Р»РёС† СЃ РґР°РЅРЅС‹РјРё
 	public enum DataTablePrefixes {
 		Dictionary("_d")
 		, Revisions("_rr")

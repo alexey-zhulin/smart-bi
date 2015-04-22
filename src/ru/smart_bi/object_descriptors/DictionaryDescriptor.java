@@ -13,33 +13,33 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		super(connection);
 		//throw new Exception("Error example");
 		f_class_id = ObjectClasses.Dictionary.getValue();
-		// Создадим обязательные поля
+		// РЎРѕР·РґР°РґРёРј РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ
 		fields.add(ObjectFieldDescriptor.createField("ID", FieldHandler.createField("id", "serial", false, 1), true, ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
 		fields.add(ObjectFieldDescriptor.createField("NAME", FieldHandler.createField("name", "text", false, 0), true, ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
 		fields.add(ObjectFieldDescriptor.createField("PARENT_ID", FieldHandler.createField("parent_id", "int", true, 0), true, ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular, null));
 	}
 	
-	// Процедура создания словаря в метабазе
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ СЃР»РѕРІР°СЂСЏ РІ РјРµС‚Р°Р±Р°Р·Рµ
 	public void CreateDictionary() throws SQLException {
-		// Определим наименование таблицы для хранения данных
+		// РћРїСЂРµРґРµР»РёРј РЅР°РёРјРµРЅРѕРІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РґР°РЅРЅС‹С…
 		SequenceHandler nameSequence = new SequenceHandler("TableName_Seq", connection);
 		String dictTableName = DataTablePrefixes.Dictionary.getValue() + nameSequence.GetNextVal();
-		// Создадим таблицу для хранения данных
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РґР°РЅРЅС‹С…
 		TableHandler tableHandler = new TableHandler(dictTableName, connection);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		int i;
 		for (i = 0; i < fields.size(); i++) {
-			// Добавляем только обычные поля, чтобы исключить ошибочно добавленные поля другого типа
+			// Р”РѕР±Р°РІР»СЏРµРј С‚РѕР»СЊРєРѕ РѕР±С‹С‡РЅС‹Рµ РїРѕР»СЏ, С‡С‚РѕР±С‹ РёСЃРєР»СЋС‡РёС‚СЊ РѕС€РёР±РѕС‡РЅРѕ РґРѕР±Р°РІР»РµРЅРЅС‹Рµ РїРѕР»СЏ РґСЂСѓРіРѕРіРѕ С‚РёРїР°
 			if (fields.get(i).fieldType == ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular) {
 				fieldsArr.add(fields.get(i).fieldHandler);
 			}
 		}
 		String tableComment = "Data table for dictionary [" + object_name + "; ext_id = " + ext_id + "]";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Запишем базовые параметры объекта в таблицу MetabaseObjects
+		// Р—Р°РїРёС€РµРј Р±Р°Р·РѕРІС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РѕР±СЉРµРєС‚Р° РІ С‚Р°Р±Р»РёС†Сѓ MetabaseObjects
 		CreateObject();
 		int object_id = GetObjectId(ext_id);
-		// Запишем информацию о созданной таблице в ObjectTables
+		// Р—Р°РїРёС€РµРј РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЃРѕР·РґР°РЅРЅРѕР№ С‚Р°Р±Р»РёС†Рµ РІ ObjectTables
 		String tableName = "ObjectTables";
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
 		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
@@ -47,7 +47,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", dictTableName));
 		fieldsContArr.add(FieldContentHandler.createFieldContent("del_order", 0));
 		tableContent.AddRecord(fieldsContArr);
-		// Запишем информацию о полях объекта в таблице ObjectFields
+		// Р—Р°РїРёС€РµРј РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїРѕР»СЏС… РѕР±СЉРµРєС‚Р° РІ С‚Р°Р±Р»РёС†Рµ ObjectFields
 		tableContent.SetTableName("ObjectFields");
 		for (i = 0; i < fields.size(); i++) {
 			fieldsContArr = new ArrayList<FieldContentHandler>();
@@ -61,7 +61,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		}
 	}
 	
-	// Функция возвращает имя таблицы, в которой хранятся данные объекта
+	// Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ С‚Р°Р±Р»РёС†С‹, РІ РєРѕС‚РѕСЂРѕР№ С…СЂР°РЅСЏС‚СЃСЏ РґР°РЅРЅС‹Рµ РѕР±СЉРµРєС‚Р°
 	public String GetTableName() throws SQLException {
 		String tableName = "";
 		String queryText = "select table_name from ObjectTables where f_object_id = ?";
@@ -74,7 +74,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		return tableName;
 	}
 	
-	// Процедура создает индекс по выбранным полям справочника
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РµС‚ РёРЅРґРµРєСЃ РїРѕ РІС‹Р±СЂР°РЅРЅС‹Рј РїРѕР»СЏРј СЃРїСЂР°РІРѕС‡РЅРёРєР°
 	public void CreateIndexForFields(ArrayList<ObjectFieldDescriptor> indexFields, String index_name, boolean isUnique) throws SQLException {
 		if (indexFields.size() == 0) return;
 		int i;

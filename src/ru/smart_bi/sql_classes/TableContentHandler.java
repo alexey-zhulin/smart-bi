@@ -8,19 +8,19 @@ public class TableContentHandler {
 	String tableName;
 	ConnectionHandler connectionHandler;
 
-	// Инициализация объекта
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р°
 	public TableContentHandler(String tableName,
 			ConnectionHandler connectionHandler) {
 		this.tableName = tableName;
 		this.connectionHandler = connectionHandler;
 	}
 
-	// Изменение имени таблицы для переключения на другую таблицу
+	// РР·РјРµРЅРµРЅРёРµ РёРјРµРЅРё С‚Р°Р±Р»РёС†С‹ РґР»СЏ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РЅР° РґСЂСѓРіСѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	public void SetTableName(String tableName) {
 		this.tableName = tableName;
 	}
 
-	// Процедура добавления записи
+	// РџСЂРѕС†РµРґСѓСЂР° РґРѕР±Р°РІР»РµРЅРёСЏ Р·Р°РїРёСЃРё
 	public void AddRecord(ArrayList<FieldContentHandler> fieldContentArr)
 			throws SQLException {
 		String queryText = "insert into " + tableName + "\n" + "(";
@@ -39,7 +39,7 @@ public class TableContentHandler {
 		queryText = queryText + ");\n";
 		PreparedStatement statement = null;
 		statement = connectionHandler.connection.prepareStatement(queryText);
-		// Подготовим параметры
+		// РџРѕРґРіРѕС‚РѕРІРёРј РїР°СЂР°РјРµС‚СЂС‹
 		for (i = 0; i < fieldContentArr.size(); i++) {
 			Object curObject = fieldContentArr.get(i).fieldValue;
 			if (curObject == null) {
@@ -63,12 +63,12 @@ public class TableContentHandler {
 				}
 			}
 		}
-		// Выполним скрипт
+		// Р’С‹РїРѕР»РЅРёРј СЃРєСЂРёРїС‚
 		statement.executeUpdate();
 		statement.close();
 	}
 	
-	// Процедура изменения записи
+	// РџСЂРѕС†РµРґСѓСЂР° РёР·РјРµРЅРµРЅРёСЏ Р·Р°РїРёСЃРё
 	public void UpdateRecord(ArrayList<FieldContentHandler> fieldContentArr, ArrayList<FieldContentHandler> primaryKeyArr)
 			throws SQLException {
 		
@@ -88,7 +88,7 @@ public class TableContentHandler {
 		}
 		PreparedStatement statement = null;
 		statement = connectionHandler.connection.prepareStatement(queryText);
-		// Подготовим параметры (изменяемые значения)
+		// РџРѕРґРіРѕС‚РѕРІРёРј РїР°СЂР°РјРµС‚СЂС‹ (РёР·РјРµРЅСЏРµРјС‹Рµ Р·РЅР°С‡РµРЅРёСЏ)
 		for (i = 0; i < fieldContentArr.size(); i++) {
 			Object curObject = fieldContentArr.get(i).fieldValue;
 			if (curObject == null) {
@@ -112,7 +112,7 @@ public class TableContentHandler {
 				}
 			}
 		}
-		// Подготовим параметры (первичный ключ)
+		// РџРѕРґРіРѕС‚РѕРІРёРј РїР°СЂР°РјРµС‚СЂС‹ (РїРµСЂРІРёС‡РЅС‹Р№ РєР»СЋС‡)
 		for (i = 0; i < primaryKeyArr.size(); i++) {
 			Object curObject = primaryKeyArr.get(i).fieldValue;
 			if (curObject == null) {
@@ -136,12 +136,12 @@ public class TableContentHandler {
 				}
 			}
 		}
-		// Выполним скрипт
+		// Р’С‹РїРѕР»РЅРёРј СЃРєСЂРёРїС‚
 		statement.executeUpdate();
 		statement.close();
 	}
 	
-	// Функция возвращает, существует ли запись в таблице с указанным значением ключевого поля
+	// Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚, СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Рµ СЃ СѓРєР°Р·Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РєР»СЋС‡РµРІРѕРіРѕ РїРѕР»СЏ
 	public boolean ValueExists(ArrayList<FieldContentHandler> primaryKeyArr) throws SQLException {
 		if (primaryKeyArr.size() == 0) return false;
 		String queryText = "select * from " + tableName + "\n";
@@ -156,7 +156,7 @@ public class TableContentHandler {
 		while (resultSet.next()) {
 			return true;
 		}
-		// Если мы здесь, то значение не найдено
+		// Р•СЃР»Рё РјС‹ Р·РґРµСЃСЊ, С‚Рѕ Р·РЅР°С‡РµРЅРёРµ РЅРµ РЅР°Р№РґРµРЅРѕ
 		return false;
 	}
 }

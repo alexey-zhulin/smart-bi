@@ -7,18 +7,18 @@ public class TableHandler {
 	String tableName;
 	ConnectionHandler connectionHandler;
 
-	// Инициализация объекта
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р°
 	public TableHandler(String tableName, ConnectionHandler connectionHandler) {
 		this.tableName = tableName;
 		this.connectionHandler = connectionHandler;
 	}
 
-	// Изменение имени таблицы для переключения на другую таблицу
+	// РР·РјРµРЅРµРЅРёРµ РёРјРµРЅРё С‚Р°Р±Р»РёС†С‹ РґР»СЏ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РЅР° РґСЂСѓРіСѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	public void SetTableName(String tableName) {
 		this.tableName = tableName;
 	}
 
-	// Функция возвращает существует ли таблица с именем tableName
+	// Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С‚Р°Р±Р»РёС†Р° СЃ РёРјРµРЅРµРј tableName
 	public boolean TableExists() throws SQLException {
 
 		ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
@@ -31,12 +31,12 @@ public class TableHandler {
 		return false;
 	}
 
-	// Создание таблицы
+	// РЎРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹
 	public void CreateTable(ArrayList<FieldHandler> fieldsArr, String tableComment) throws SQLException {
 		if (TableExists()) {
 			return;
 		}
-		// Скрипт создания самой таблицы
+		// РЎРєСЂРёРїС‚ СЃРѕР·РґР°РЅРёСЏ СЃР°РјРѕР№ С‚Р°Р±Р»РёС†С‹
 		String queryText = "create table " + tableName + "(\n";
 		int i;
 		for (i = 0; i < fieldsArr.size(); i++) {
@@ -47,17 +47,17 @@ public class TableHandler {
 		}
 		queryText = queryText + ");\n";
 
-		// Скрипт добавления первичного ключа
-		// Подготовим поля для включения в PK, опираясь на поле primaryKeyIndex,
-		// как параметр включения в массив и индекс сортировки
+		// РЎРєСЂРёРїС‚ РґРѕР±Р°РІР»РµРЅРёСЏ РїРµСЂРІРёС‡РЅРѕРіРѕ РєР»СЋС‡Р°
+		// РџРѕРґРіРѕС‚РѕРІРёРј РїРѕР»СЏ РґР»СЏ РІРєР»СЋС‡РµРЅРёСЏ РІ PK, РѕРїРёСЂР°СЏСЃСЊ РЅР° РїРѕР»Рµ primaryKeyIndex,
+		// РєР°Рє РїР°СЂР°РјРµС‚СЂ РІРєР»СЋС‡РµРЅРёСЏ РІ РјР°СЃСЃРёРІ Рё РёРЅРґРµРєСЃ СЃРѕСЂС‚РёСЂРѕРІРєРё
 		Map<Integer, FieldHandler> fieldsMap = new TreeMap<Integer, FieldHandler>();
 		for (i = 0; i < fieldsArr.size(); i++) {
 			if (fieldsArr.get(i).primaryKeyIndex > 0) {
 				fieldsMap.put(fieldsArr.get(i).primaryKeyIndex, fieldsArr.get(i));
 			}
 		}
-		// Если в массиве полей есть элементы, то сформируем по ним скрипт для
-		// первичного ключа
+		// Р•СЃР»Рё РІ РјР°СЃСЃРёРІРµ РїРѕР»РµР№ РµСЃС‚СЊ СЌР»РµРјРµРЅС‚С‹, С‚Рѕ СЃС„РѕСЂРјРёСЂСѓРµРј РїРѕ РЅРёРј СЃРєСЂРёРїС‚ РґР»СЏ
+		// РїРµСЂРІРёС‡РЅРѕРіРѕ РєР»СЋС‡Р°
 		i = 0;
 		if (fieldsMap.size() > 0) {
 			queryText = queryText + "alter table " + tableName
@@ -70,42 +70,42 @@ public class TableHandler {
 			}
 			queryText = queryText + ");\n";
 		}
-		// Добавим комментарий к таблице
+		// Р”РѕР±Р°РІРёРј РєРѕРјРјРµРЅС‚Р°СЂРёР№ Рє С‚Р°Р±Р»РёС†Рµ
 		if (tableComment != null) {
 			queryText = queryText + "comment on table " + tableName + " is '" + tableComment + "';\n";
 		}
 
-		// Выполним скрипт
+		// Р’С‹РїРѕР»РЅРёРј СЃРєСЂРёРїС‚
 		Statement statement = null;
 		statement = connectionHandler.connection.createStatement();
 		statement.executeUpdate(queryText);
 		statement.close();
 	}
 
-	// Процедура добавления индекса
+	// РџСЂРѕС†РµРґСѓСЂР° РґРѕР±Р°РІР»РµРЅРёСЏ РёРЅРґРµРєСЃР°
 	public void CreateIndex(ArrayList<IndexHandler> fieldsArr, String index_name,
 			boolean isUnique) throws SQLException {
 		if (!TableExists()) {
 			return;
 		}
 		Statement statement = null;
-		// Подготовим поля для включения в индекс, опираясь на поле
-		// indexPosition, как параметр включения в массив и индекс сортировки
+		// РџРѕРґРіРѕС‚РѕРІРёРј РїРѕР»СЏ РґР»СЏ РІРєР»СЋС‡РµРЅРёСЏ РІ РёРЅРґРµРєСЃ, РѕРїРёСЂР°СЏСЃСЊ РЅР° РїРѕР»Рµ
+		// indexPosition, РєР°Рє РїР°СЂР°РјРµС‚СЂ РІРєР»СЋС‡РµРЅРёСЏ РІ РјР°СЃСЃРёРІ Рё РёРЅРґРµРєСЃ СЃРѕСЂС‚РёСЂРѕРІРєРё
 		Map<Integer, IndexHandler> fieldsMap = new TreeMap<Integer, IndexHandler>();
 		int i;
 		for (i = 0; i < fieldsArr.size(); i++) {
 			fieldsMap.put(fieldsArr.get(i).indexPosition, fieldsArr.get(i));
 		}
-		// Если в массиве полей есть элементы, то сформируем по ним скрипт для
-		// первичного ключа
+		// Р•СЃР»Рё РІ РјР°СЃСЃРёРІРµ РїРѕР»РµР№ РµСЃС‚СЊ СЌР»РµРјРµРЅС‚С‹, С‚Рѕ СЃС„РѕСЂРјРёСЂСѓРµРј РїРѕ РЅРёРј СЃРєСЂРёРїС‚ РґР»СЏ
+		// РїРµСЂРІРёС‡РЅРѕРіРѕ РєР»СЋС‡Р°
 		i = 0;
 		if (fieldsMap.size() > 0) {
-			// Удалим индекс с таким же наименованием, если был
+			// РЈРґР°Р»РёРј РёРЅРґРµРєСЃ СЃ С‚Р°РєРёРј Р¶Рµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµРј, РµСЃР»Рё Р±С‹Р»
 			String queryText = "drop index if exists " + index_name;
 			statement = connectionHandler.connection.createStatement();
 			statement.executeUpdate(queryText);
 			statement.close();
-			// Создадим новый
+			// РЎРѕР·РґР°РґРёРј РЅРѕРІС‹Р№
 			queryText = "create " + ((isUnique) ? "unique" : "") + " index "
 					+ index_name + " on " + tableName + "(\n";
 			for (Map.Entry<Integer, IndexHandler> entry : fieldsMap.entrySet()) {
@@ -115,14 +115,14 @@ public class TableHandler {
 						+ ((fieldsMap.size() > i) ? "," : "");
 			}
 			queryText = queryText + ");\n";
-			// Выполним скрипт
+			// Р’С‹РїРѕР»РЅРёРј СЃРєСЂРёРїС‚
 			statement = connectionHandler.connection.createStatement();
 			statement.executeUpdate(queryText);
 			statement.close();
 		}
 	}
 
-	// Процедура добавления constraint
+	// РџСЂРѕС†РµРґСѓСЂР° РґРѕР±Р°РІР»РµРЅРёСЏ constraint
 	public void CreateConstraint(String tableTo, boolean onDeleteCascade, String in_fk_list)
 			throws SQLException {
 		Statement statement = null;
@@ -152,7 +152,7 @@ public class TableHandler {
 			statement.executeUpdate(queryText);
 			statement.close();
 		}
-		// Уберем последнюю запятую
+		// РЈР±РµСЂРµРј РїРѕСЃР»РµРґРЅСЋСЋ Р·Р°РїСЏС‚СѓСЋ
 		pk_list = pk_list.substring(0, pk_list.length() - 2);
 		fk_list = fk_list.substring(0, fk_list.length() - 2);
 		if (in_fk_list != "") {
@@ -173,7 +173,7 @@ public class TableHandler {
 		CreateConstraint(tableTo, onDeleteCascade, "");
 	}
 
-	// Удаление таблицы
+	// РЈРґР°Р»РµРЅРёРµ С‚Р°Р±Р»РёС†С‹
 	public void DropTable() throws SQLException {
 		Statement statement = null;
 		statement = connectionHandler.connection.createStatement();
@@ -182,7 +182,7 @@ public class TableHandler {
 		statement.close();
 	}
 	
-	// Функция проверяет, существует ли указанное поле в таблице
+	// Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂСЏРµС‚, СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё СѓРєР°Р·Р°РЅРЅРѕРµ РїРѕР»Рµ РІ С‚Р°Р±Р»РёС†Рµ
 	public boolean FieldExists(String fieldName) throws SQLException {
 		String queryText = "select * from information_schema.columns where table_name = lower(?) and column_name = lower(?)";
 		ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
@@ -191,7 +191,7 @@ public class TableHandler {
 		while (resultSet.next()) {
 			return true;
 		}
-		// Если мы здесь - значит поле в таблице не найдено
+		// Р•СЃР»Рё РјС‹ Р·РґРµСЃСЊ - Р·РЅР°С‡РёС‚ РїРѕР»Рµ РІ С‚Р°Р±Р»РёС†Рµ РЅРµ РЅР°Р№РґРµРЅРѕ
 		return false;
 	}
 }

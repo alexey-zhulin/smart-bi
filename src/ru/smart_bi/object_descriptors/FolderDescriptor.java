@@ -13,7 +13,7 @@ public class FolderDescriptor extends ObjectDescriptor {
 	}
 	
 	public void CreateFolder() throws SQLException {
-		// Запишем базовые параметры объекта в таблицу MetabaseObjects
+		// Р—Р°РїРёС€РµРј Р±Р°Р·РѕРІС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РѕР±СЉРµРєС‚Р° РІ С‚Р°Р±Р»РёС†Сѓ MetabaseObjects
 		CreateObject();
 	}
 	

@@ -13,9 +13,9 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		f_class_id = ObjectClasses.Rubricator.getValue();
 	}
 	
-	// Процедура создания рубрикатора
+	// РџСЂРѕС†РµРґСѓСЂР° СЃРѕР·РґР°РЅРёСЏ СЂСѓР±СЂРёРєР°С‚РѕСЂР°
 	public void CreateRubricator(ConnectionHandler connection) throws SQLException {
-		// Создадим таблицу ревизий
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ СЂРµРІРёР·РёР№
 		SequenceHandler nameSequence = new SequenceHandler("TableName_Seq", connection);
 		String revTableName = DataTablePrefixes.Revisions.getValue() + nameSequence.GetNextVal();;
 		TableHandler tableHandler = new TableHandler(revTableName, connection);
@@ -25,33 +25,33 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		fieldsArr.add(FieldHandler.createField("revision_date", "timestamp without time zone", false, 0));
 		String tableComment = "Revision data table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим таблицу фактов
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ С„Р°РєС‚РѕРІ
 		String factTableName = DataTablePrefixes.Facts.getValue() + nameSequence.GetNextVal();
 		tableHandler.SetTableName(factTableName);
 		fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("fact_id", "serial", false, 1));
 		int i;
 		for (i = 0; i < fields.size(); i++) {
-			// Добавляем только обычные поля
+			// Р”РѕР±Р°РІР»СЏРµРј С‚РѕР»СЊРєРѕ РѕР±С‹С‡РЅС‹Рµ РїРѕР»СЏ
 			if (fields.get(i).fieldType == ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.Regular) {
-				fieldsArr.add(fields.get(i).fieldHandler); // Добавляем поля из структуры каталога
+				fieldsArr.add(fields.get(i).fieldHandler); // Р”РѕР±Р°РІР»СЏРµРј РїРѕР»СЏ РёР· СЃС‚СЂСѓРєС‚СѓСЂС‹ РєР°С‚Р°Р»РѕРіР°
 			}
 		}
-		// Добавим поле с единицей измерения
+		// Р”РѕР±Р°РІРёРј РїРѕР»Рµ СЃ РµРґРёРЅРёС†РµР№ РёР·РјРµСЂРµРЅРёСЏ
 		boolean fieldWasInserted = false;
 		for (i = 0; i < fields.size(); i++) {
-			// Добавляем только обычные поля
+			// Р”РѕР±Р°РІР»СЏРµРј С‚РѕР»СЊРєРѕ РѕР±С‹С‡РЅС‹Рµ РїРѕР»СЏ
 			if ((fields.get(i).fieldType == ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.RubrUnit) & (!fieldWasInserted)) {
-				fieldsArr.add(fields.get(i).fieldHandler); // Добавляем поля из структуры каталога
+				fieldsArr.add(fields.get(i).fieldHandler); // Р”РѕР±Р°РІР»СЏРµРј РїРѕР»СЏ РёР· СЃС‚СЂСѓРєС‚СѓСЂС‹ РєР°С‚Р°Р»РѕРіР°
 				fieldWasInserted = true;
 			}
 		}
 		tableComment = "Facts data table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим constraint на таблицу ревизий
+		// РЎРѕР·РґР°РґРёРј constraint РЅР° С‚Р°Р±Р»РёС†Сѓ СЂРµРІРёР·РёР№
 		String tableTo = revTableName;
 		tableHandler.CreateConstraint(tableTo, true);
-		// Создадим таблицу значений
+		// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёР№
 		String valuesTableName = DataTablePrefixes.Values.getValue() + nameSequence.GetNextVal();
 		tableHandler.SetTableName(valuesTableName);
 		fieldsArr = new ArrayList<FieldHandler>();
@@ -60,33 +60,33 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		fieldsArr.add(FieldHandler.createField("value", "real", false, 0));
 		tableComment = "Values data table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим constraint на таблицу ревизий
+		// РЎРѕР·РґР°РґРёРј constraint РЅР° С‚Р°Р±Р»РёС†Сѓ СЂРµРІРёР·РёР№
 		tableTo = revTableName;
 		tableHandler.CreateConstraint(tableTo, true);
-		// Создадим constraint на таблицу фактов
+		// РЎРѕР·РґР°РґРёРј constraint РЅР° С‚Р°Р±Р»РёС†Сѓ С„Р°РєС‚РѕРІ
 		tableTo = factTableName;
 		tableHandler.CreateConstraint(tableTo, true);
-		// Создадим constraint на таблицу CalendarLevels
+		// РЎРѕР·РґР°РґРёРј constraint РЅР° С‚Р°Р±Р»РёС†Сѓ CalendarLevels
 		tableTo = "CalendarLevels";
 		tableHandler.CreateConstraint(tableTo, true);
-		// Добавим таблицу для хранения информации об уровнях календаря рубрикатора
+		// Р”РѕР±Р°РІРёРј С‚Р°Р±Р»РёС†Сѓ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё РѕР± СѓСЂРѕРІРЅСЏС… РєР°Р»РµРЅРґР°СЂСЏ СЂСѓР±СЂРёРєР°С‚РѕСЂР°
 		String calendarLevelTableName = DataTablePrefixes.CalendarLevels.getValue() + nameSequence.GetNextVal();
 		tableHandler.SetTableName(calendarLevelTableName);
 		fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("calendar_level_id", "serial", false, 1));
 		tableComment = "Calendar levels table for time series database [" + object_name + "; ext_id = " + ext_id + "]";
 		tableHandler.CreateTable(fieldsArr, tableComment);
-		// Создадим constraint на словарь уровней календаря
+		// РЎРѕР·РґР°РґРёРј constraint РЅР° СЃР»РѕРІР°СЂСЊ СѓСЂРѕРІРЅРµР№ РєР°Р»РµРЅРґР°СЂСЏ
 		tableTo = "CalendarLevels";
 		tableHandler.CreateConstraint(tableTo, true);
-		// Создадим уникальный индекс на поле уровня календаря
+		// РЎРѕР·РґР°РґРёРј СѓРЅРёРєР°Р»СЊРЅС‹Р№ РёРЅРґРµРєСЃ РЅР° РїРѕР»Рµ СѓСЂРѕРІРЅСЏ РєР°Р»РµРЅРґР°СЂСЏ
 		ArrayList<IndexHandler> indexfieldsArr = new ArrayList<IndexHandler>();
 		indexfieldsArr.add(IndexHandler.createIndexField("f_level_id", 0));
 		tableHandler.CreateIndex(indexfieldsArr, "idx_calendar_level", true);
-		// Запишем базовые параметры объекта в таблицу MetabaseObjects
+		// Р—Р°РїРёС€РµРј Р±Р°Р·РѕРІС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РѕР±СЉРµРєС‚Р° РІ С‚Р°Р±Р»РёС†Сѓ MetabaseObjects
 		CreateObject();
 		int object_id = GetObjectId(ext_id);
-		// Запишем информацию о созданных таблицах в ObjectTables
+		// Р—Р°РїРёС€РµРј РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЃРѕР·РґР°РЅРЅС‹С… С‚Р°Р±Р»РёС†Р°С… РІ ObjectTables
 		String tableName = "ObjectTables";
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
 		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
@@ -112,7 +112,7 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", calendarLevelTableName));
 		fieldsContArr.add(FieldContentHandler.createFieldContent("del_order", 3));
 		tableContent.AddRecord(fieldsContArr);
-		// Запишем информацию о полях объекта в таблице ObjectFields (все пользовательские поля находятся в таблице фактов)
+		// Р—Р°РїРёС€РµРј РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїРѕР»СЏС… РѕР±СЉРµРєС‚Р° РІ С‚Р°Р±Р»РёС†Рµ ObjectFields (РІСЃРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ РїРѕР»СЏ РЅР°С…РѕРґСЏС‚СЃСЏ РІ С‚Р°Р±Р»РёС†Рµ С„Р°РєС‚РѕРІ)
 		tableContent.SetTableName("ObjectFields");
 		for (i = 0; i < fields.size(); i++) {
 			fieldsContArr = new ArrayList<FieldContentHandler>();

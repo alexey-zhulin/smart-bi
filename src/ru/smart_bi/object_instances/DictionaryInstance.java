@@ -18,11 +18,11 @@ public class DictionaryInstance extends ObjectInstance {
 		super(connection);
 	}
 
-	// Функция возвращает курсор с данными справочника
+	// Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РєСѓСЂСЃРѕСЂ СЃ РґР°РЅРЅС‹РјРё СЃРїСЂР°РІРѕС‡РЅРёРєР°
 	public ResultSet GetDictionaryData() throws SQLException {
 		String dictTableName = dictionaryDescriptor.GetTableName();
 		ArrayList<ObjectFieldDescriptor> fieldsArr = dictionaryDescriptor.fields;
-		// Сформируем скрипт, для получения данных объекта
+		// РЎС„РѕСЂРјРёСЂСѓРµРј СЃРєСЂРёРїС‚, РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°РЅРЅС‹С… РѕР±СЉРµРєС‚Р°
 		String queryText = "select ";
 		int i;
 		for (i = 0; i < fieldsArr.size(); i++) {
@@ -38,11 +38,11 @@ public class DictionaryInstance extends ObjectInstance {
 		return resultSet;
 	}
 
-	// Процедура загружает данные в справочник
+	// РџСЂРѕС†РµРґСѓСЂР° Р·Р°РіСЂСѓР¶Р°РµС‚ РґР°РЅРЅС‹Рµ РІ СЃРїСЂР°РІРѕС‡РЅРёРє
 	public void LoadData(IDictionaryLoader dataLoader, LoadParams loadParams) throws Exception {
 		ResultSet resultSet = dataLoader.getData();
 		ResultSetMetaData resultMetaData = resultSet.getMetaData();
-		// Загрузим данные в словарь
+		// Р—Р°РіСЂСѓР·РёРј РґР°РЅРЅС‹Рµ РІ СЃР»РѕРІР°СЂСЊ
 		String tableName = dictionaryDescriptor.GetTableName();
 		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
 		while (resultSet.next()) {
@@ -51,12 +51,12 @@ public class DictionaryInstance extends ObjectInstance {
 			boolean needToUpdate = false;
 			int i;
 			for (i = 1; i <= resultMetaData.getColumnCount(); i++) {
-				// При необходимости исключим загрузку автоинкрементного поля (serial)
+				// РџСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РёСЃРєР»СЋС‡РёРј Р·Р°РіСЂСѓР·РєСѓ Р°РІС‚РѕРёРЅРєСЂРµРјРµРЅС‚РЅРѕРіРѕ РїРѕР»СЏ (serial)
 				if (!loadParams.loadSequenceFields) {
 					if (resultMetaData.isAutoIncrement(i)) continue;
 				}
 				fieldsContArr.add(FieldContentHandler.createFieldContent(dataLoader.getFieldName(i-1), resultSet.getObject(i)));
-				// Опираясь на поле синхронизации, проверим добавлять новую запись или обновлять существующую
+				// РћРїРёСЂР°СЏСЃСЊ РЅР° РїРѕР»Рµ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё, РїСЂРѕРІРµСЂРёРј РґРѕР±Р°РІР»СЏС‚СЊ РЅРѕРІСѓСЋ Р·Р°РїРёСЃСЊ РёР»Рё РѕР±РЅРѕРІР»СЏС‚СЊ СЃСѓС‰РµСЃС‚РІСѓСЋС‰СѓСЋ
 				if (dataLoader.getFieldName(i-1) == loadParams.syncFieldName) {
 					keyFieldsContArr.add(FieldContentHandler.createFieldContent(dataLoader.getFieldName(i-1), resultSet.getObject(i)));
 					needToUpdate = tableContent.ValueExists(keyFieldsContArr);

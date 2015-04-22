@@ -1,11 +1,11 @@
 package ru.smart_bi.sql_classes;
 
-// Класс поля для формирования скрипта создания таблицы
+// РљР»Р°СЃСЃ РїРѕР»СЏ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ СЃРєСЂРёРїС‚Р° СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹
 public class FieldHandler {
-	public String fieldName; // Наименование поля
-	public String fieldType; // Тип поля
+	public String fieldName; // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїРѕР»СЏ
+	public String fieldType; // РўРёРї РїРѕР»СЏ
 	public boolean isNull;   // null / not null
-	public int primaryKeyIndex; // порядок вхождения в первичный ключ (если = 0, то не входит) 
+	public int primaryKeyIndex; // РїРѕСЂСЏРґРѕРє РІС…РѕР¶РґРµРЅРёСЏ РІ РїРµСЂРІРёС‡РЅС‹Р№ РєР»СЋС‡ (РµСЃР»Рё = 0, С‚Рѕ РЅРµ РІС…РѕРґРёС‚) 
 
 	public static FieldHandler createField(String fieldName, String fieldType, boolean isNull, int primaryKeyIndex) {
 		FieldHandler fieldHandler = new FieldHandler();

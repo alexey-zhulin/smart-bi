@@ -1,12 +1,12 @@
 package ru.smart_bi.data_loader_descriptors;
 
-// Класс описывает параметры при загрузке данных
+// РљР»Р°СЃСЃ РѕРїРёСЃС‹РІР°РµС‚ РїР°СЂР°РјРµС‚СЂС‹ РїСЂРё Р·Р°РіСЂСѓР·РєРµ РґР°РЅРЅС‹С…
 public class LoadParams {
-	public boolean loadSequenceFields; // Загружать значение в поле, если поле имеет тип serial
-	public String syncFieldName; // Имя поля для синхронизации имеющихся и загружаемых данных
+	public boolean loadSequenceFields; // Р—Р°РіСЂСѓР¶Р°С‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ РїРѕР»Рµ, РµСЃР»Рё РїРѕР»Рµ РёРјРµРµС‚ С‚РёРї serial
+	public String syncFieldName; // РРјСЏ РїРѕР»СЏ РґР»СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РёРјРµСЋС‰РёС…СЃСЏ Рё Р·Р°РіСЂСѓР¶Р°РµРјС‹С… РґР°РЅРЅС‹С…
 	
 	public LoadParams() {
-		// Значения по умолчанию
+		// Р—РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		this.loadSequenceFields = false;
 	}
 }

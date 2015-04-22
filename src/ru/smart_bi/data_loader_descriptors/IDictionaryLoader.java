@@ -4,9 +4,9 @@ import java.sql.ResultSet;
 
 public interface IDictionaryLoader {
 
-	// Функция получения курсора данных
+	// Р¤СѓРЅРєС†РёСЏ РїРѕР»СѓС‡РµРЅРёСЏ РєСѓСЂСЃРѕСЂР° РґР°РЅРЅС‹С…
 	public ResultSet getData() throws Exception;
 	
-	// Функция получения наименования поля таблицы справочника
+	// Р¤СѓРЅРєС†РёСЏ РїРѕР»СѓС‡РµРЅРёСЏ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ РїРѕР»СЏ С‚Р°Р±Р»РёС†С‹ СЃРїСЂР°РІРѕС‡РЅРёРєР°
 	public String getFieldName(int position) throws Exception;
 }
