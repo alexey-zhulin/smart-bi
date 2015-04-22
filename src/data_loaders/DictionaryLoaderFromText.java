@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 
 import com.mockrunner.mock.jdbc.MockResultSet;
 
+import data_loader_descriptors.DictionaryLoader;
 import data_loader_descriptors.IDictionaryLoader;
 import data_loader_descriptors.LoadStructure;
 
@@ -17,18 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class DictionaryLoaderFromText implements IDictionaryLoader {
+public class DictionaryLoaderFromText extends DictionaryLoader implements IDictionaryLoader {
 	public String fileName;
 	public String delimeter;
 	public Charset encoding;
 	public int startRow;
 	public int endRow;
-	public List<LoadStructure> headers;
 	
 	final static Charset ENCODING_UTF_8 = StandardCharsets.UTF_8;
 	
 	@Override
 	public ResultSet getData() throws Exception {
+		// Предварительно отсортируем структуру загрузки (headers) в соответствии с позицией в источнике (positionInSource)
+		HeadersSorter();
 		MockResultSet mockResultSet = new MockResultSet("textResultSet");
 		// Заполним структуру
 		int i;
@@ -108,12 +110,6 @@ public class DictionaryLoaderFromText implements IDictionaryLoader {
 			if (headers.get(i).positionInSource == position) return true;
 		}
 		return false;
-	}
-
-	@Override
-	public String getFieldName(int position) throws Exception {
-		if (headers.size() > position) return headers.get(position).linkedField.fieldHandler.fieldName;
-		return null;
 	}
 
 }

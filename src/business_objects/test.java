@@ -26,7 +26,7 @@ public class test {
 	private static String password;
 
 	// Процедура загрузки единиц измерения 
-	static void LoadDictionary(ConnectionHandler connection, DictionaryDescriptor dictionaryDescriptor, String fileName) throws Exception {
+	static void LoadDictionary(ConnectionHandler connection, DictionaryDescriptor dictionaryDescriptor, String fileName, boolean loadSequenceFields) throws Exception {
 		// Подготовим загрузчик
 		DictionaryLoaderFromText loaderFromText = new DictionaryLoaderFromText();
 		loaderFromText.delimeter = ";";
@@ -35,14 +35,14 @@ public class test {
 		//loaderFromText.endRow = 3;
 		// Определим структуру полей загрузчика
 		List<LoadStructure> headers = new ArrayList<LoadStructure>();
-		headers.add(LoadStructure.createLoadStructure("id", FieldTypes.Int, dictionaryDescriptor.FieldById("id"), 0));
-		headers.add(LoadStructure.createLoadStructure("name", FieldTypes.String, dictionaryDescriptor.FieldById("name"), 1));
-		//headers.add(LoadStructure.createLoadStructure("parent_id", FieldTypes.Int, dictionaryDescriptor.FieldById("parent_id"), 2));
-		headers.add(LoadStructure.createLoadStructure("code_1c", FieldTypes.String, dictionaryDescriptor.FieldById("code_1c"), 3));
+		headers.add(LoadStructure.createLoadStructure(FieldTypes.String, dictionaryDescriptor.FieldById("code_1c"), 3));
+		headers.add(LoadStructure.createLoadStructure(FieldTypes.Int, dictionaryDescriptor.FieldById("id"), 0));
+		headers.add(LoadStructure.createLoadStructure(FieldTypes.String, dictionaryDescriptor.FieldById("name"), 1));
+		headers.add(LoadStructure.createLoadStructure(FieldTypes.Int, dictionaryDescriptor.FieldById("parent_id"), 2));
 		loaderFromText.headers = headers;
 		// Определим параметры загрузки
 		LoadParams loadParams = new LoadParams();
-		loadParams.loadSequenceFields = false;
+		loadParams.loadSequenceFields = loadSequenceFields;
 		loadParams.syncFieldName = "code_1c";
 		// Создадим instance словаря для загрузки
 		DictionaryInstance dictionaryInstance = new DictionaryInstance(connection);
@@ -91,10 +91,10 @@ public class test {
 		measure_units.CreateIndexForFields(indexFields, "idx_units_code_1c",
 				true);
 		// Загрузим данные
-		//String fileName = "E:\\tmp\\Книга1.csv";
-		String fileName = "E:\\tmp\\data_for_units.txt";
-		LoadDictionary(connection, measure_units, fileName);
-		//LoadDictionary(connection, measure_units, fileName);
+		String fileName = "E:\\tmp\\Книга1.csv";
+		LoadDictionary(connection, measure_units, fileName, false);
+		//String fileName = "E:\\tmp\\data_for_units.txt";
+		//LoadDictionary(connection, measure_units, fileName, true);
 		// Каталог показателей "Динамика продаж номенклатуры"
 		RubricatorDescriptor rubricator = new RubricatorDescriptor(connection);
 		rubricator.object_name = "Динамика продаж номенклатуры";
@@ -132,8 +132,6 @@ public class test {
 			CreateObjects(connection);
 			connection.CloseConnection();
 		} catch (Exception e) {
-			// System.err.println(e.getClass().getName() + ": " +
-			// e.getMessage());
 			e.printStackTrace();
 			System.exit(0);
 		}

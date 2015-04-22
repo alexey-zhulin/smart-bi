@@ -3,21 +3,15 @@ package data_loader_descriptors;
 import object_descriptors.ObjectFieldDescriptor;
 
 public class LoadStructure {
-	public String header_name;
-	public FieldTypes field_type;
+	public FieldTypes field_type; // Типизация загружаемых данных
 	public ObjectFieldDescriptor linkedField; // Поле объекта, с которым
 												// связываем поле загрузчика
 	public int positionInSource; // Позиция в источнике
 
-	public static LoadStructure createLoadStructure(String header_name,
-			FieldTypes field_type, ObjectFieldDescriptor linkedField,
-			int positionInSource) throws Exception {
-		if (linkedField == null) {
-			throw new Exception(
-					"The field ["+ header_name +"] has null value in linkedField");
-		}
+	public static LoadStructure createLoadStructure(FieldTypes field_type,
+			ObjectFieldDescriptor linkedField, int positionInSource)
+			throws Exception {
 		LoadStructure loadStructure = new LoadStructure();
-		loadStructure.header_name = header_name;
 		loadStructure.field_type = field_type;
 		loadStructure.linkedField = linkedField;
 		loadStructure.positionInSource = positionInSource;
