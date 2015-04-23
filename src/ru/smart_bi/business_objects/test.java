@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.smart_bi.crypto.CryptoHandler;
 import ru.smart_bi.data_loader_descriptors.LoadParams;
 import ru.smart_bi.data_loader_descriptors.LoadStructure;
 import ru.smart_bi.data_loader_descriptors.LoadStructure.FieldTypes;
@@ -130,15 +131,17 @@ public class test {
 	// Процедура создания метабазы
 	static void CreateMetabase(String[] args) {
 		try {
-			String path = ConnectionParamsHandler.GetConnectionParamValue(
-					args, "path");
+			CryptoHandler cryptoHandler = new CryptoHandler();
+			cryptoHandler.Init();
+			String path = ConnectionParamsHandler.GetConnectionParamValue(args,
+					"path");
 			ConnectionParamsHandler connectionParamHandler = new ConnectionParamsHandler();
 			connectionParamHandler.LoadParamsFromXml(path);
 			ConnectionHandler connection = new ConnectionHandler(
 					connectionParamHandler.server, connectionParamHandler.port,
 					connectionParamHandler.database,
 					connectionParamHandler.user,
-					connectionParamHandler.password);
+					cryptoHandler.decrypt(connectionParamHandler.password));
 			MetabaseDescriptor metabaseHandler = new MetabaseDescriptor();
 			// metabaseHandler.DeleteMetabase(connection);
 			boolean recreateMetabase = true;
@@ -150,32 +153,48 @@ public class test {
 			System.exit(0);
 		}
 	}
-	
+
 	// Процедура настройки параметров подключения
 	static void SaveConnectionParams(String[] args) {
 		try {
-			String path = ConnectionParamsHandler.GetConnectionParamValue(
-					args, "path");
+			CryptoHandler cryptoHandler = new CryptoHandler();
+			cryptoHandler.Init();
+			String path = ConnectionParamsHandler.GetConnectionParamValue(args,
+					"path");
 			ConnectionParamsHandler connectionParamHandler = new ConnectionParamsHandler();
 			connectionParamHandler.server = "10.0.3.50";
 			connectionParamHandler.port = "5432";
 			connectionParamHandler.database = "testdb";
 			connectionParamHandler.user = "postgres";
-			connectionParamHandler.password = "postgres";
+			connectionParamHandler.password = cryptoHandler.encrypt("postgres");
 			connectionParamHandler.SaveParamsToXml(path);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
 	}
-	
+
+	// Функция генерации ключа для шифрования
+	public static String GenerateSecretKey() {
+		try {
+			CryptoHandler cryptoHandler = new CryptoHandler();
+			return cryptoHandler.SecretKeyToStr(cryptoHandler.GenerateKey());
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		return null;
+	}
+
 	public static void main(String[] args) {
 		Instant start, stop;
 		start = Instant.now();
 		// Создание метабазы
 		CreateMetabase(args);
 		// Настройка параметров
-		//SaveConnectionParams(args);
+		// SaveConnectionParams(args);
+		// Генерация ключа для шифрования
+		// System.out.println(GenerateSecretKey());
 		stop = Instant.now();
 		System.out.println("Operation completed..."
 				+ Duration.between(start, stop).toMillis() + " ms");
