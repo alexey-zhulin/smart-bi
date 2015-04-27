@@ -108,8 +108,8 @@ public class test {
 		// Загрузим данные
 		// String fileName = "E:\\tmp\\Книга1.csv";
 		// LoadDictionary(connection, measure_units, fileName, false);
-		String fileName = "E:\\tmp\\data_for_units.txt";
-		LoadDictionary(connection, measure_units, fileName, true);
+		// String fileName = "E:\\tmp\\data_for_units.txt";
+		// LoadDictionary(connection, measure_units, fileName, true);
 		// Каталог показателей "Динамика продаж номенклатуры"
 		RubricatorDescriptor rubricator = new RubricatorDescriptor(connection);
 		rubricator.object_name = "Динамика продаж номенклатуры";
