@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="metabaseInstance" class="ru.smart_bi.object_instances.MetabaseInstance" init-method="initMetabase" destroy-method = "closeConnection">
+       <property name="server" value="10.0.3.50"/>
+       <property name="port" value="5432"/>
+       <property name="database" value="testdb"/>
+       <property name="user" value="postgres"/>
+       <property name="password" value="postgres"/>
+       <property name="recreateMetabase" value="true"/>
+   </bean>
+
+</beans>

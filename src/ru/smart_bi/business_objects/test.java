@@ -5,17 +5,20 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.smart_bi.crypto.CryptoHandler;
+import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import ru.smart_bi.data_loader_descriptors.LoadParams;
 import ru.smart_bi.data_loader_descriptors.LoadStructure;
 import ru.smart_bi.data_loader_descriptors.LoadStructure.FieldTypes;
 import ru.smart_bi.data_loaders.DictionaryLoaderFromText;
 import ru.smart_bi.object_descriptors.DictionaryDescriptor;
-import ru.smart_bi.object_descriptors.MetabaseDescriptor;
 import ru.smart_bi.object_descriptors.ObjectFieldDescriptor;
 import ru.smart_bi.object_descriptors.RubricatorDescriptor;
 import ru.smart_bi.object_instances.DictionaryInstance;
-import ru.smart_bi.params_support.ConnectionParamsHandler;
+import ru.smart_bi.object_instances.MetabaseInstance;
 import ru.smart_bi.sql_classes.ConnectionHandler;
 import ru.smart_bi.sql_classes.FieldHandler;
 
@@ -54,6 +57,8 @@ public class test {
 	}
 
 	static void CreateObjects(ConnectionHandler connection) throws Exception {
+		Logger log = Logger.getRootLogger();
+		log.info("Creating objects...");
 		// Справочник "Группы номенклатуры"
 		DictionaryDescriptor goods_groups = new DictionaryDescriptor(connection);
 		goods_groups.object_name = "Группы номенклатуры";
@@ -128,75 +133,27 @@ public class test {
 		rubricator.CreateRubricator(connection);
 	}
 
-	// Процедура создания метабазы
-	static void CreateMetabase(String[] args) {
-		try {
-			CryptoHandler cryptoHandler = new CryptoHandler();
-			cryptoHandler.Init();
-			String path = ConnectionParamsHandler.GetConnectionParamValue(args,
-					"path");
-			ConnectionParamsHandler connectionParamHandler = new ConnectionParamsHandler();
-			connectionParamHandler.LoadParamsFromXml(path);
-			ConnectionHandler connection = new ConnectionHandler(
-					connectionParamHandler.server, connectionParamHandler.port,
-					connectionParamHandler.database,
-					connectionParamHandler.user,
-					cryptoHandler.decrypt(connectionParamHandler.password));
-			MetabaseDescriptor metabaseHandler = new MetabaseDescriptor();
-			// metabaseHandler.DeleteMetabase(connection);
-			boolean recreateMetabase = true;
-			metabaseHandler.CreateMetabase(connection, recreateMetabase);
-			CreateObjects(connection);
-			connection.CloseConnection();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-	}
-
-	// Процедура настройки параметров подключения
-	static void SaveConnectionParams(String[] args) {
-		try {
-			CryptoHandler cryptoHandler = new CryptoHandler();
-			cryptoHandler.Init();
-			String path = ConnectionParamsHandler.GetConnectionParamValue(args,
-					"path");
-			ConnectionParamsHandler connectionParamHandler = new ConnectionParamsHandler();
-			connectionParamHandler.server = "10.0.3.50";
-			connectionParamHandler.port = "5432";
-			connectionParamHandler.database = "testdb";
-			connectionParamHandler.user = "postgres";
-			connectionParamHandler.password = cryptoHandler.encrypt("postgres");
-			connectionParamHandler.SaveParamsToXml(path);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-	}
-
-	// Функция генерации ключа для шифрования
-	public static String GenerateSecretKey() {
-		try {
-			CryptoHandler cryptoHandler = new CryptoHandler();
-			return cryptoHandler.SecretKeyToStr(cryptoHandler.GenerateKey());
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-		return null;
-	}
-
 	public static void main(String[] args) {
+		Logger log = Logger.getRootLogger();
 		Instant start, stop;
 		start = Instant.now();
 		// Создание метабазы
-		CreateMetabase(args);
-		// Настройка параметров
-		// SaveConnectionParams(args);
-		// Генерация ключа для шифрования
-		// System.out.println(GenerateSecretKey());
+		try {
+			ApplicationContext context = new ClassPathXmlApplicationContext(
+					"Beans.xml");
+			MetabaseInstance metabaseInstance = (MetabaseInstance) context
+					.getBean("metabaseInstance");
+			if (metabaseInstance.getRecreateMetabase()) {
+				ConnectionHandler connection = metabaseInstance.getConnection();
+				CreateObjects(connection);
+			}
+			((ConfigurableApplicationContext)context).close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 		stop = Instant.now();
-		System.out.println("Operation completed..."
+		log.info("Operation completed..."
 				+ Duration.between(start, stop).toMillis() + " ms");
 	}
 }

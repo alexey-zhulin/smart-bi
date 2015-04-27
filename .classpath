@@ -5,5 +5,27 @@
 	<classpathentry kind="lib" path="lib/postgresql-9.3-1103.jdbc3.jar"/>
 	<classpathentry kind="lib" path="E:/Projects/Java/smart-bi.git/trunk/lib/mockrunner-jdbc.jar"/>
 	<classpathentry kind="lib" path="E:/Projects/Java/smart-bi.git/trunk/lib/javax.mail-1.5.2.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-aop-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-aspects-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-beans-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-context-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-context-support-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-core-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-expression-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-instrument-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-instrument-tomcat-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-jdbc-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-jms-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-messaging-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-orm-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-oxm-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-test-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-tx-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-web-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-webmvc-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-webmvc-portlet-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/spring-framework-4.1.6.RELEASE/libs/spring-websocket-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/commons-logging-1.2/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="E:/Projects/Java/ext_libs/apache-log4j-1.2.17/log4j-1.2.17.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
