@@ -162,7 +162,7 @@ public class MetabaseDescriptor {
 				.createField("field_type_id", "int", false, 1));
 		fieldsArr.add(FieldHandler.createField("field_type_name", "text",
 				false, 0));
-		String tableComment = "Object field list table";
+		String tableComment = "Object field type table";
 		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Инициализируем значения
 		AddObjectFieldType(FieldTypes.Regular.getValue(), "Regular");
