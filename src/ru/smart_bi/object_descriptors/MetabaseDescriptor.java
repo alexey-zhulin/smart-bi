@@ -3,85 +3,70 @@ package ru.smart_bi.object_descriptors;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import ru.smart_bi.sql_classes.*;
 
 public class MetabaseDescriptor {
-	private String server;
-	private String port;
-	private String database;
-	private String user;
-	private String password;
 	private boolean recreateMetabase;
-	private ConnectionHandler connection;
-	
-	public void setServer(String server) {
-		this.server = server;
-	}
-	
-	public void setPort(String port) {
-		this.port = port;
-	}
-	
-	public void setDatabase(String database) {
-		this.database = database;
-	}
-	
-	public void setUser(String user) {
-		this.user = user;
-	}
-	
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	
+	private DataSource dataSource;
+	private JdbcTemplate jdbcTemplate;
+
 	public void setRecreateMetabase(boolean recreateMetabase) {
 		this.recreateMetabase = recreateMetabase;
 	}
+
 	public boolean getRecreateMetabase() {
 		return this.recreateMetabase;
 	}
-	
-	public ConnectionHandler getConnection() {
-		return connection;
-	}
-	
+
 	// Процедура закрытия подключения
 	public void closeConnection() throws SQLException {
 		Logger log = Logger.getRootLogger();
 		log.info("Closing connection...");
-		connection.CloseConnection();
+		dataSource.getConnection().close();
 	}
-	
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+		this.jdbcTemplate = new JdbcTemplate(this.dataSource);
+	}
+
 	// Процедура инициализации метабазы
 	public void initMetabase() throws ClassNotFoundException, SQLException {
 		Logger log = Logger.getRootLogger();
 		log.info("Initializing metabase...");
-		connection = new ConnectionHandler(server, port,
-				database, user, password);
-		MetabaseDescriptor metabaseHandler = new MetabaseDescriptor();
-		if (recreateMetabase) metabaseHandler.CreateMetabase(connection, recreateMetabase);
+		if (recreateMetabase)
+			CreateMetabase();
 	}
 
 	// Процедура удаления структуры метабазы
-	public void DeleteMetabase(ConnectionHandler connection)
-			throws SQLException {
+	public void DeleteMetabase() throws SQLException {
 		// Удалим таблицы
-		TableHandler tableHandler = new TableHandler("", connection);
-		ArrayList<String> tableList = new ArrayList<String>();
+		TableHandler tableHandler = new TableHandler("", jdbcTemplate);
 		// Таблицы экземпляров объектов метабазы
 		tableHandler.SetTableName("ObjectTables");
-		if (tableHandler.TableExists()) {
-			String queryText = "select table_name from ObjectTables order by del_order";
-			ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
-			ResultSet resultSet = connection.CreateResultSet(queryText,
-					paramsArr);
-			while (resultSet.next()) {
-				tableList.add(resultSet.getString("table_name"));
-			}
-		}
+		String queryText = "select table_name from ObjectTables order by del_order";
+		List<String> tableList = jdbcTemplate.query(queryText,
+				new ResultSetExtractor<List<String>>() {
+					@Override
+					public List<String> extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+
+						List<String> list = new ArrayList<String>();
+						while (rs.next()) {
+							list.add(rs.getString("column_name"));
+						}
+						return list;
+					}
+				});
 		// Базовые таблицы
 		tableList.add("ObjectTables");
 		tableList.add("ObjectFields");
@@ -95,7 +80,7 @@ public class MetabaseDescriptor {
 			tableHandler.DropTable();
 		}
 		// Удалим секвенции
-		SequenceHandler sequenceHandler = new SequenceHandler("", connection);
+		SequenceHandler sequenceHandler = new SequenceHandler("", jdbcTemplate);
 		ArrayList<String> sequenceList = new ArrayList<String>();
 		// Соберем секвенции для удаления
 		sequenceList.add("TableName_Seq");
@@ -107,11 +92,10 @@ public class MetabaseDescriptor {
 	}
 
 	// Процедура добаввляет запись в таблицу ObjectClasses
-	void AddObjectClass(ConnectionHandler connection, int class_id,
-			String class_name) throws SQLException {
+	void AddObjectClass(int class_id, String class_name) throws SQLException {
 		String tableName = "ObjectClasses";
 		TableContentHandler tableContent = new TableContentHandler(tableName,
-				connection);
+				jdbcTemplate);
 		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 		fieldsContArr.add(FieldContentHandler.createFieldContent("class_id",
 				class_id));
@@ -122,10 +106,10 @@ public class MetabaseDescriptor {
 
 	// Процедура создания таблицы ObjectTables (таблицы, в которых хранятся
 	// данные объектов метабазы)
-	void CreateObjectTables(ConnectionHandler connection) throws SQLException {
+	void CreateObjectTables() throws SQLException {
 		// Создадим саму таблицу
 		String tableName = "ObjectTables";
-		TableHandler tableHandler = new TableHandler(tableName, connection);
+		TableHandler tableHandler = new TableHandler(tableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("table_id", "serial", false, 1));
 		fieldsArr.add(FieldHandler.createField("table_name", "text", false, 0));
@@ -147,11 +131,11 @@ public class MetabaseDescriptor {
 	}
 
 	// Процедура добаввляет запись в таблицу ObjectClasses
-	void AddObjectFieldType(ConnectionHandler connection, int field_type_id,
-			String field_type_name) throws SQLException {
+	void AddObjectFieldType(int field_type_id, String field_type_name)
+			throws SQLException {
 		String tableName = "ObjectFieldTypes";
 		TableContentHandler tableContent = new TableContentHandler(tableName,
-				connection);
+				jdbcTemplate);
 		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 		fieldsContArr.add(FieldContentHandler.createFieldContent(
 				"field_type_id", field_type_id));
@@ -162,11 +146,10 @@ public class MetabaseDescriptor {
 
 	// Процедура создания таблицы ObjectFieldTypes (таблицы, в которой храним
 	// типы полей)
-	void CreateObjectFieldTypes(ConnectionHandler connection)
-			throws SQLException {
+	void CreateObjectFieldTypes() throws SQLException {
 		// Создадим саму таблицу
 		String tableName = "ObjectFieldTypes";
-		TableHandler tableHandler = new TableHandler(tableName, connection);
+		TableHandler tableHandler = new TableHandler(tableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler
 				.createField("field_type_id", "int", false, 1));
@@ -175,17 +158,16 @@ public class MetabaseDescriptor {
 		String tableComment = "Object field list table";
 		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Инициализируем значения
-		AddObjectFieldType(connection, FieldTypes.Regular.getValue(), "Regular");
-		AddObjectFieldType(connection, FieldTypes.RubrUnit.getValue(),
-				"RubrUnit");
+		AddObjectFieldType(FieldTypes.Regular.getValue(), "Regular");
+		AddObjectFieldType(FieldTypes.RubrUnit.getValue(), "RubrUnit");
 	}
 
 	// Процедура добавляет запись в таблицу AddObjectCalendarLevel
-	void AddObjectCalendarLevel(ConnectionHandler connection, int level_id,
-			String level_name) throws SQLException {
+	void AddObjectCalendarLevel(int level_id, String level_name)
+			throws SQLException {
 		String tableName = "CalendarLevels";
 		TableContentHandler tableContent = new TableContentHandler(tableName,
-				connection);
+				jdbcTemplate);
 		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 		fieldsContArr.add(FieldContentHandler.createFieldContent("level_id",
 				level_id));
@@ -196,33 +178,29 @@ public class MetabaseDescriptor {
 
 	// Процедура создания таблицы CalendarLevels (таблица, со значениями уровня
 	// календаря)
-	void CreateCalendarLevels(ConnectionHandler connection) throws SQLException {
+	void CreateCalendarLevels() throws SQLException {
 		// Создадим саму таблицу
 		String tableName = "CalendarLevels";
-		TableHandler tableHandler = new TableHandler(tableName, connection);
+		TableHandler tableHandler = new TableHandler(tableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("level_id", "int", false, 1));
 		fieldsArr.add(FieldHandler.createField("level_name", "text", false, 0));
 		String tableComment = "Calendar level dictionary";
 		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Инициализируем значения
-		AddObjectCalendarLevel(connection, CalendarLevels.Day.getValue(), "Day");
-		AddObjectCalendarLevel(connection, CalendarLevels.Week.getValue(),
-				"Week");
-		AddObjectCalendarLevel(connection, CalendarLevels.Month.getValue(),
-				"Month");
-		AddObjectCalendarLevel(connection, CalendarLevels.Quarter.getValue(),
-				"Quarter");
-		AddObjectCalendarLevel(connection, CalendarLevels.Year.getValue(),
-				"Year");
+		AddObjectCalendarLevel(CalendarLevels.Day.getValue(), "Day");
+		AddObjectCalendarLevel(CalendarLevels.Week.getValue(), "Week");
+		AddObjectCalendarLevel(CalendarLevels.Month.getValue(), "Month");
+		AddObjectCalendarLevel(CalendarLevels.Quarter.getValue(), "Quarter");
+		AddObjectCalendarLevel(CalendarLevels.Year.getValue(), "Year");
 	}
 
 	// Процедура создания таблицы ObjectFields (таблицы, в которой храним
 	// структуру полей объекта)
-	void CreateObjectFields(ConnectionHandler connection) throws SQLException {
+	void CreateObjectFields() throws SQLException {
 		// Создадим саму таблицу
 		String tableName = "ObjectFields";
-		TableHandler tableHandler = new TableHandler(tableName, connection);
+		TableHandler tableHandler = new TableHandler(tableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("field_id", "serial", false, 1));
 		fieldsArr
@@ -241,18 +219,18 @@ public class MetabaseDescriptor {
 	}
 
 	// Процедура создания секвенции для наименования таблиц с данными
-	void CreateTableNameSeq(ConnectionHandler connection) throws SQLException {
+	void CreateTableNameSeq() throws SQLException {
 		String sequenceName = "TableName_Seq";
 		SequenceHandler sequenceHandler = new SequenceHandler(sequenceName,
-				connection);
+				jdbcTemplate);
 		sequenceHandler.CreateSequence();
 	}
 
 	// Процедура создания таблицы ObjectClasses (классов объектов метабазы)
-	void CreateObjectClasses(ConnectionHandler connection) throws SQLException {
+	void CreateObjectClasses() throws SQLException {
 		// Создадим саму таблицу
 		String tableName = "ObjectClasses";
-		TableHandler tableHandler = new TableHandler(tableName, connection);
+		TableHandler tableHandler = new TableHandler(tableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("class_id", "int", false, 1));
 		fieldsArr.add(FieldHandler.createField("class_name", "text", false, 0));
@@ -263,21 +241,20 @@ public class MetabaseDescriptor {
 		indexfieldsArr.add(IndexHandler.createIndexField("class_name", 0));
 		tableHandler.CreateIndex(indexfieldsArr, "idx_class_name", true);
 		// Инициализируем значения
-		AddObjectClass(connection, ObjectClasses.Undefined.getValue(),
+		AddObjectClass(ObjectClasses.Undefined.getValue(),
 				"Undefined");
-		AddObjectClass(connection, ObjectClasses.Folder.getValue(), "Folder");
-		AddObjectClass(connection, ObjectClasses.Dictionary.getValue(),
+		AddObjectClass(ObjectClasses.Folder.getValue(), "Folder");
+		AddObjectClass(ObjectClasses.Dictionary.getValue(),
 				"Dictionary");
-		AddObjectClass(connection, ObjectClasses.Rubricator.getValue(),
+		AddObjectClass(ObjectClasses.Rubricator.getValue(),
 				"Rubricator");
 	}
 
 	// Процедура создания таблицы MetabaseObjects (объектов метабазы)
-	void CreateMetabaseObjects(ConnectionHandler connection)
-			throws SQLException {
+	void CreateMetabaseObjects() throws SQLException {
 		// Создадим саму таблицу
 		String tableName = "MetabaseObjects";
-		TableHandler tableHandler = new TableHandler(tableName, connection);
+		TableHandler tableHandler = new TableHandler(tableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr
 				.add(FieldHandler.createField("object_id", "serial", false, 1));
@@ -307,25 +284,24 @@ public class MetabaseDescriptor {
 	}
 
 	// Процедура создания метабазы
-	public void CreateMetabase(ConnectionHandler connection, boolean recreate)
-			throws ClassNotFoundException, SQLException {
+	public void CreateMetabase() throws ClassNotFoundException, SQLException {
 		// Удалим старые таблицы метабазы
-		DeleteMetabase(connection);
+		DeleteMetabase();
 		// Создадим таблицу ObjectClasses
-		CreateObjectClasses(connection);
+		CreateObjectClasses();
 		// Создадим таблицу MetabaseObjects
-		CreateMetabaseObjects(connection);
+		CreateMetabaseObjects();
 		// Создадим таблицу ObjectTables
-		CreateObjectTables(connection);
+		CreateObjectTables();
 		// Создадим для нее sequence для наименований таблиц, содержащих хданные
 		// объектов
-		CreateTableNameSeq(connection);
+		CreateTableNameSeq();
 		// Создадим таблицу с типами полей
-		CreateObjectFieldTypes(connection);
+		CreateObjectFieldTypes();
 		// Создадим таблицу с уровнями календаря
-		CreateCalendarLevels(connection);
+		CreateCalendarLevels();
 		// Создадим таблицу хранения полей объектов
-		CreateObjectFields(connection);
+		CreateObjectFields();
 	}
 
 	// Энумератор классов объектов метабазы

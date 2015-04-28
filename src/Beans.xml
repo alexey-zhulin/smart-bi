@@ -5,15 +5,16 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-   <bean id="metabaseDescriptor" class="ru.smart_bi.object_descriptors.MetabaseDescriptor" init-method="initMetabase" destroy-method = "closeConnection">
-       <!--<property name="server" value="localhost"/>-->
-       <property name="server" value="10.0.3.50"/>
-       <property name="port" value="5432"/>
-       <property name="database" value="testdb"/>
-       <property name="user" value="postgres"/>
-       <!--<property name="password" value="123"/>-->
-       <property name="password" value="postgres"/>
-       <property name="recreateMetabase" value="true"/>
-   </bean>
+  <bean id="metabaseDescriptor" class="ru.smart_bi.object_descriptors.MetabaseDescriptor" destroy-method = "closeConnection">
+      <property name="dataSource" ref="dataSource"/>
+      <property name="recreateMetabase" value="true"/>
+  </bean>
+  <bean id="dataSource"
+  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="org.postgresql.Driver"/>
+      <property name="url" value="jdbc:postgresql://10.0.3.50:5432/testdb"/>
+      <property name="username" value="postgres"/>
+      <property name="password" value="123"/>
+  </bean>
 
 </beans>

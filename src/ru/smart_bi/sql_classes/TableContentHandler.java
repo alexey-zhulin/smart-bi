@@ -1,18 +1,18 @@
 package ru.smart_bi.sql_classes;
 
 import java.sql.*;
-import java.sql.Date;
 import java.util.*;
+
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class TableContentHandler {
 	String tableName;
-	ConnectionHandler connectionHandler;
+	JdbcTemplate jdbcTemplate;
 
 	// Инициализация объекта
-	public TableContentHandler(String tableName,
-			ConnectionHandler connectionHandler) {
+	public TableContentHandler(String tableName, JdbcTemplate jdbcTemplate) {
 		this.tableName = tableName;
-		this.connectionHandler = connectionHandler;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	// Изменение имени таблицы для переключения на другую таблицу
@@ -31,40 +31,14 @@ public class TableContentHandler {
 		queryText = queryText + ")\n";
 		queryText = queryText + "values\n";
 		queryText = queryText + "(";
+		ArrayList<Object> params = new ArrayList<Object>();
 		for (int i = 0; i < fieldContentArr.size(); i++) {
 			queryText = queryText + "? "
 					+ (((fieldContentArr.size() - 1) > i) ? "," : "");
+			params.add(fieldContentArr.get(i).fieldValue);
 		}
 		queryText = queryText + ");\n";
-		PreparedStatement statement = null;
-		statement = connectionHandler.connection.prepareStatement(queryText);
-		// Подготовим параметры
-		for (int i = 0; i < fieldContentArr.size(); i++) {
-			Object curObject = fieldContentArr.get(i).fieldValue;
-			if (curObject == null) {
-				statement.setNull(i + 1, Types.NULL);
-			}
-			else {
-				if (curObject.getClass().equals(Integer.class)) {
-					statement.setInt(i + 1, (int)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(String.class)) {
-					statement.setString(i + 1, (String)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Boolean.class)) {
-					statement.setBoolean(i + 1, (Boolean)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Double.class)) {
-					statement.setDouble(i + 1, (Double)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Date.class)) {
-					statement.setDate(i + 1, (Date)fieldContentArr.get(i).fieldValue);
-				}
-			}
-		}
-		// Выполним скрипт
-		statement.executeUpdate();
-		statement.close();
+		jdbcTemplate.update(queryText, params.toArray());
 	}
 	
 	// Процедура изменения записи
@@ -73,70 +47,20 @@ public class TableContentHandler {
 		
 		String queryText = "update " + tableName + "\n";
 		queryText = queryText + "set\n";
+		ArrayList<Object> params = new ArrayList<Object>();
 		for (int i = 0; i < fieldContentArr.size(); i++) {
 			queryText = queryText + fieldContentArr.get(i).fieldName + " = ?"
 					+ (((fieldContentArr.size() - 1) > i) ? ",\n" : "\n");
+			params.add(fieldContentArr.get(i).fieldValue);
 		}
 		queryText = queryText + "\n";
 		queryText = queryText + "where\n";
 		for (int i = 0; i < primaryKeyArr.size(); i++) {
 			queryText = queryText + primaryKeyArr.get(i).fieldName + " = ?"
 					+ (((primaryKeyArr.size() - 1) > i) ? "and \n" : "\n");
-			
+			params.add(primaryKeyArr.get(i).fieldValue);
 		}
-		PreparedStatement statement = null;
-		statement = connectionHandler.connection.prepareStatement(queryText);
-		// Подготовим параметры (изменяемые значения)
-		for (int i = 0; i < fieldContentArr.size(); i++) {
-			Object curObject = fieldContentArr.get(i).fieldValue;
-			if (curObject == null) {
-				statement.setNull(i + 1, Types.NULL);
-			}
-			else {
-				if (curObject.getClass().equals(Integer.class)) {
-					statement.setInt(i + 1, (int)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(String.class)) {
-					statement.setString(i + 1, (String)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Boolean.class)) {
-					statement.setBoolean(i + 1, (Boolean)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Double.class)) {
-					statement.setDouble(i + 1, (Double)fieldContentArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Date.class)) {
-					statement.setDate(i + 1, (Date)fieldContentArr.get(i).fieldValue);
-				}
-			}
-		}
-		// Подготовим параметры (первичный ключ)
-		for (int i = 0; i < primaryKeyArr.size(); i++) {
-			Object curObject = primaryKeyArr.get(i).fieldValue;
-			if (curObject == null) {
-				statement.setNull(i + fieldContentArr.size() + 1, Types.NULL);
-			}
-			else {
-				if (curObject.getClass().equals(Integer.class)) {
-					statement.setInt(i + fieldContentArr.size() + 1, (int)primaryKeyArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(String.class)) {
-					statement.setString(i + fieldContentArr.size() + 1, (String)primaryKeyArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Boolean.class)) {
-					statement.setBoolean(i + fieldContentArr.size() + 1, (Boolean)primaryKeyArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Double.class)) {
-					statement.setDouble(i + fieldContentArr.size() + 1, (Double)primaryKeyArr.get(i).fieldValue);
-				}
-				if (curObject.getClass().equals(Date.class)) {
-					statement.setDate(i + fieldContentArr.size() + 1, (Date)primaryKeyArr.get(i).fieldValue);
-				}
-			}
-		}
-		// Выполним скрипт
-		statement.executeUpdate();
-		statement.close();
+		jdbcTemplate.update(queryText, params.toArray());
 	}
 	
 	// Функция возвращает, существует ли запись в таблице с указанным значением ключевого поля
@@ -149,11 +73,12 @@ public class TableContentHandler {
 					+ (((primaryKeyArr.size() - 1) > i) ? "and \n" : "\n");
 			
 		}
-		ResultSet resultSet = connectionHandler.CreateResultSet(queryText, primaryKeyArr);
-		while (resultSet.next()) {
-			return true;
+		ArrayList<Object> params = new ArrayList<Object>();
+		for (int i = 0; i < primaryKeyArr.size(); i++) {
+			params.add(primaryKeyArr.get(i).fieldValue);
 		}
-		// Если мы здесь, то значение не найдено
-		return false;
+		int rowCount = jdbcTemplate.queryForObject(queryText, params.toArray(),
+				Integer.class);
+		return (rowCount > 0);
 	}
 }
