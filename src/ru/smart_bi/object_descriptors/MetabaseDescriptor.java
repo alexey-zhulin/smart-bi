@@ -4,9 +4,66 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import ru.smart_bi.sql_classes.*;
 
 public class MetabaseDescriptor {
+	private String server;
+	private String port;
+	private String database;
+	private String user;
+	private String password;
+	private boolean recreateMetabase;
+	private ConnectionHandler connection;
+	
+	public void setServer(String server) {
+		this.server = server;
+	}
+	
+	public void setPort(String port) {
+		this.port = port;
+	}
+	
+	public void setDatabase(String database) {
+		this.database = database;
+	}
+	
+	public void setUser(String user) {
+		this.user = user;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public void setRecreateMetabase(boolean recreateMetabase) {
+		this.recreateMetabase = recreateMetabase;
+	}
+	public boolean getRecreateMetabase() {
+		return this.recreateMetabase;
+	}
+	
+	public ConnectionHandler getConnection() {
+		return connection;
+	}
+	
+	// Процедура закрытия подключения
+	public void closeConnection() throws SQLException {
+		Logger log = Logger.getRootLogger();
+		log.info("Closing connection...");
+		connection.CloseConnection();
+	}
+	
+	// Процедура инициализации метабазы
+	public void initMetabase() throws ClassNotFoundException, SQLException {
+		Logger log = Logger.getRootLogger();
+		log.info("Initializing metabase...");
+		connection = new ConnectionHandler(server, port,
+				database, user, password);
+		MetabaseDescriptor metabaseHandler = new MetabaseDescriptor();
+		if (recreateMetabase) metabaseHandler.CreateMetabase(connection, recreateMetabase);
+	}
 
 	// Процедура удаления структуры метабазы
 	public void DeleteMetabase(ConnectionHandler connection)
@@ -249,7 +306,7 @@ public class MetabaseDescriptor {
 
 	}
 
-	// Процедура инициализации метабазы
+	// Процедура создания метабазы
 	public void CreateMetabase(ConnectionHandler connection, boolean recreate)
 			throws ClassNotFoundException, SQLException {
 		// Удалим старые таблицы метабазы

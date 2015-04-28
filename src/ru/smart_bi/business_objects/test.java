@@ -15,10 +15,10 @@ import ru.smart_bi.data_loader_descriptors.LoadStructure;
 import ru.smart_bi.data_loader_descriptors.LoadStructure.FieldTypes;
 import ru.smart_bi.data_loaders.DictionaryLoaderFromText;
 import ru.smart_bi.object_descriptors.DictionaryDescriptor;
+import ru.smart_bi.object_descriptors.MetabaseDescriptor;
 import ru.smart_bi.object_descriptors.ObjectFieldDescriptor;
 import ru.smart_bi.object_descriptors.RubricatorDescriptor;
 import ru.smart_bi.object_instances.DictionaryInstance;
-import ru.smart_bi.object_instances.MetabaseInstance;
 import ru.smart_bi.sql_classes.ConnectionHandler;
 import ru.smart_bi.sql_classes.FieldHandler;
 
@@ -141,8 +141,8 @@ public class test {
 		try {
 			ApplicationContext context = new ClassPathXmlApplicationContext(
 					"Beans.xml");
-			MetabaseInstance metabaseInstance = (MetabaseInstance) context
-					.getBean("metabaseInstance");
+			MetabaseDescriptor metabaseInstance = (MetabaseDescriptor) context
+					.getBean("metabaseDescriptor");
 			if (metabaseInstance.getRecreateMetabase()) {
 				ConnectionHandler connection = metabaseInstance.getConnection();
 				CreateObjects(connection);
