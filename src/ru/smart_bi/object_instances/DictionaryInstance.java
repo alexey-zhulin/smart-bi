@@ -3,22 +3,23 @@ package ru.smart_bi.object_instances;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import ru.smart_bi.data_loader_descriptors.IDictionaryLoader;
 import ru.smart_bi.data_loader_descriptors.LoadParams;
 import ru.smart_bi.object_descriptors.DictionaryDescriptor;
-import ru.smart_bi.object_descriptors.ObjectFieldDescriptor;
-import ru.smart_bi.sql_classes.ConnectionHandler;
 import ru.smart_bi.sql_classes.FieldContentHandler;
 import ru.smart_bi.sql_classes.TableContentHandler;
 
 public class DictionaryInstance extends ObjectInstance {
 	public DictionaryDescriptor dictionaryDescriptor;
 
-	public DictionaryInstance(ConnectionHandler connection) {
-		super(connection);
+	public DictionaryInstance(JdbcTemplate jdbcTemplate) {
+		super(jdbcTemplate);
 	}
 
 	// Функция возвращает курсор с данными справочника
+	/*
 	public ResultSet GetDictionaryData() throws SQLException {
 		String dictTableName = dictionaryDescriptor.GetTableName();
 		ArrayList<ObjectFieldDescriptor> fieldsArr = dictionaryDescriptor.fields;
@@ -36,6 +37,7 @@ public class DictionaryInstance extends ObjectInstance {
 		ResultSet resultSet = connection.CreateResultSet(queryText, paramsArr);
 		return resultSet;
 	}
+	*/
 
 	// Процедура загружает данные в справочник
 	public void LoadData(IDictionaryLoader dataLoader, LoadParams loadParams) throws Exception {
@@ -43,7 +45,7 @@ public class DictionaryInstance extends ObjectInstance {
 		ResultSetMetaData resultMetaData = resultSet.getMetaData();
 		// Загрузим данные в словарь
 		String tableName = dictionaryDescriptor.GetTableName();
-		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
+		TableContentHandler tableContent = new TableContentHandler(tableName, jdbcTemplate);
 		while (resultSet.next()) {
 			ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 			ArrayList<FieldContentHandler> keyFieldsContArr = new ArrayList<FieldContentHandler>();

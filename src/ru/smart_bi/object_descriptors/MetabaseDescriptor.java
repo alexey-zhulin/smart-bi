@@ -22,6 +22,10 @@ public class MetabaseDescriptor {
 	public void setRecreateMetabase(boolean recreateMetabase) {
 		this.recreateMetabase = recreateMetabase;
 	}
+	
+	public JdbcTemplate getJdbcTemplate() {
+		return this.jdbcTemplate;
+	}
 
 	public boolean getRecreateMetabase() {
 		return this.recreateMetabase;
@@ -52,21 +56,24 @@ public class MetabaseDescriptor {
 		// Удалим таблицы
 		TableHandler tableHandler = new TableHandler("", jdbcTemplate);
 		// Таблицы экземпляров объектов метабазы
+		List<String> tableList = new ArrayList<String>();
 		tableHandler.SetTableName("ObjectTables");
-		String queryText = "select table_name from ObjectTables order by del_order";
-		List<String> tableList = jdbcTemplate.query(queryText,
-				new ResultSetExtractor<List<String>>() {
-					@Override
-					public List<String> extractData(ResultSet rs)
-							throws SQLException, DataAccessException {
-
-						List<String> list = new ArrayList<String>();
-						while (rs.next()) {
-							list.add(rs.getString("column_name"));
+		if (tableHandler.TableExists()) {
+			String queryText = "select table_name from ObjectTables order by del_order";
+			tableList = jdbcTemplate.query(queryText,
+					new ResultSetExtractor<List<String>>() {
+						@Override
+						public List<String> extractData(ResultSet rs)
+								throws SQLException, DataAccessException {
+	
+							List<String> list = new ArrayList<String>();
+							while (rs.next()) {
+								list.add(rs.getString("table_name"));
+							}
+							return list;
 						}
-						return list;
-					}
-				});
+					});
+		}
 		// Базовые таблицы
 		tableList.add("ObjectTables");
 		tableList.add("ObjectFields");

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import ru.smart_bi.data_loader_descriptors.LoadParams;
 import ru.smart_bi.data_loader_descriptors.LoadStructure;
@@ -19,14 +20,12 @@ import ru.smart_bi.object_descriptors.MetabaseDescriptor;
 import ru.smart_bi.object_descriptors.ObjectFieldDescriptor;
 import ru.smart_bi.object_descriptors.RubricatorDescriptor;
 import ru.smart_bi.object_instances.DictionaryInstance;
-import ru.smart_bi.sql_classes.ConnectionHandler;
 import ru.smart_bi.sql_classes.FieldHandler;
 
 public class test {
 
 	// Процедура загрузки единиц измерения
-	static void LoadDictionary(ConnectionHandler connection,
-			DictionaryDescriptor dictionaryDescriptor, String fileName,
+	static void LoadDictionary(JdbcTemplate jdbcTemplate, DictionaryDescriptor dictionaryDescriptor, String fileName,
 			boolean loadSequenceFields) throws Exception {
 		// Подготовим загрузчик
 		DictionaryLoaderFromText loaderFromText = new DictionaryLoaderFromText();
@@ -51,16 +50,16 @@ public class test {
 		loadParams.syncFieldName = "code_1c";
 		// Создадим instance словаря для загрузки
 		DictionaryInstance dictionaryInstance = new DictionaryInstance(
-				connection);
+				jdbcTemplate);
 		dictionaryInstance.dictionaryDescriptor = dictionaryDescriptor;
 		dictionaryInstance.LoadData(loaderFromText, loadParams);
 	}
 
-	static void CreateObjects(ConnectionHandler connection) throws Exception {
+	static void CreateObjects(JdbcTemplate jdbcTemplate) throws Exception {
 		Logger log = Logger.getRootLogger();
 		log.info("Creating objects...");
 		// Справочник "Группы номенклатуры"
-		DictionaryDescriptor goods_groups = new DictionaryDescriptor(connection);
+		DictionaryDescriptor goods_groups = new DictionaryDescriptor(jdbcTemplate);
 		goods_groups.object_name = "Группы номенклатуры";
 		goods_groups.ext_id = "GROUP_OF_GOODS";
 		ObjectFieldDescriptor code_1cField = ObjectFieldDescriptor
@@ -80,7 +79,7 @@ public class test {
 				"idx_group_of_goods_code_1c", true);
 		// Справочник "Единицы измерения"
 		DictionaryDescriptor measure_units = new DictionaryDescriptor(
-				connection);
+				jdbcTemplate);
 		measure_units.object_name = "Единицы измерения";
 		measure_units.ext_id = "UNITS";
 		code_1cField = ObjectFieldDescriptor
@@ -107,11 +106,11 @@ public class test {
 				true);
 		// Загрузим данные
 		// String fileName = "E:\\tmp\\Книга1.csv";
-		// LoadDictionary(connection, measure_units, fileName, false);
+		// LoadDictionary(jdbcTemplate, measure_units, fileName, false);
 		// String fileName = "E:\\tmp\\data_for_units.txt";
-		// LoadDictionary(connection, measure_units, fileName, true);
+		// LoadDictionary(jdbcTemplate, measure_units, fileName, true);
 		// Каталог показателей "Динамика продаж номенклатуры"
-		RubricatorDescriptor rubricator = new RubricatorDescriptor(connection);
+		RubricatorDescriptor rubricator = new RubricatorDescriptor(jdbcTemplate);
 		rubricator.object_name = "Динамика продаж номенклатуры";
 		rubricator.ext_id = "SALE_DINAMICS";
 		// Добавим разрез по группам номенклатуры
@@ -130,7 +129,7 @@ public class test {
 						false,
 						ru.smart_bi.object_descriptors.MetabaseDescriptor.FieldTypes.RubrUnit,
 						measure_units.GetTableName()));
-		rubricator.CreateRubricator(connection);
+		rubricator.CreateRubricator();
 	}
 
 	public static void main(String[] args) {
@@ -144,8 +143,8 @@ public class test {
 			MetabaseDescriptor metabaseInstance = (MetabaseDescriptor) context
 					.getBean("metabaseDescriptor");
 			if (metabaseInstance.getRecreateMetabase()) {
-				ConnectionHandler connection = metabaseInstance.getConnection();
-				CreateObjects(connection);
+				JdbcTemplate jdbcTemplate = metabaseInstance.getJdbcTemplate();
+				CreateObjects(jdbcTemplate);
 			}
 			((ConfigurableApplicationContext)context).close();
 		} catch (Exception e) {

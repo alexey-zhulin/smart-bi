@@ -2,13 +2,14 @@ package ru.smart_bi.object_descriptors;
 
 import java.sql.SQLException;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import ru.smart_bi.object_descriptors.MetabaseDescriptor.ObjectClasses;
-import ru.smart_bi.sql_classes.ConnectionHandler;
 
 public class FolderDescriptor extends ObjectDescriptor {
 	
-	public FolderDescriptor(ConnectionHandler connection) {
-		super(connection);
+	public FolderDescriptor(JdbcTemplate jdbcTemplate) {
+		super(jdbcTemplate);
 		f_class_id = ObjectClasses.Dictionary.getValue();
 	}
 	

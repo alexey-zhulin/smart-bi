@@ -3,14 +3,19 @@ package ru.smart_bi.object_descriptors;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import ru.smart_bi.object_descriptors.MetabaseDescriptor.ObjectClasses;
 import ru.smart_bi.sql_classes.*;
 
 public class DictionaryDescriptor extends ObjectDescriptor {
 
-	public DictionaryDescriptor(ConnectionHandler connection) throws Exception {
-		super(connection);
+	public DictionaryDescriptor(JdbcTemplate jdbcTemplate) throws Exception {
+		super(jdbcTemplate);
 		//throw new Exception("Error example");
 		f_class_id = ObjectClasses.Dictionary.getValue();
 		// Создадим обязательные поля
@@ -22,10 +27,10 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 	// Процедура создания словаря в метабазе
 	public void CreateDictionary() throws SQLException {
 		// Определим наименование таблицы для хранения данных
-		SequenceHandler nameSequence = new SequenceHandler("TableName_Seq", connection);
+		SequenceHandler nameSequence = new SequenceHandler("TableName_Seq", jdbcTemplate);
 		String dictTableName = DataTablePrefixes.Dictionary.getValue() + nameSequence.GetNextVal();
 		// Создадим таблицу для хранения данных
-		TableHandler tableHandler = new TableHandler(dictTableName, connection);
+		TableHandler tableHandler = new TableHandler(dictTableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		for (int i = 0; i < fields.size(); i++) {
 			// Добавляем только обычные поля, чтобы исключить ошибочно добавленные поля другого типа
@@ -40,7 +45,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		int object_id = GetObjectId(ext_id);
 		// Запишем информацию о созданной таблице в ObjectTables
 		String tableName = "ObjectTables";
-		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
+		TableContentHandler tableContent = new TableContentHandler(tableName, jdbcTemplate);
 		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 		fieldsContArr.add(FieldContentHandler.createFieldContent("f_object_id", object_id));
 		fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", dictTableName));
@@ -64,11 +69,21 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 	public String GetTableName() throws SQLException {
 		String tableName = "";
 		String queryText = "select table_name from ObjectTables where f_object_id = ?";
-		ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
-		paramsArr.add(FieldContentHandler.createFieldContent("f_object_id", GetObjectId(ext_id)));
-		ResultSet resultSet = connection.CreateResultSet(queryText, paramsArr);
-		while (resultSet.next()) {
-			tableName = resultSet.getString("table_name");
+		List<String> tableList = jdbcTemplate.query(queryText, new Object[]{GetObjectId(ext_id)},
+				new ResultSetExtractor<List<String>>() {
+					@Override
+					public List<String> extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+
+						List<String> list = new ArrayList<String>();
+						while (rs.next()) {
+							list.add(rs.getString("table_name"));
+						}
+						return list;
+					}
+				});
+		for (String curTable: tableList) {
+			tableName = curTable;
 		}
 		return tableName;
 	}
@@ -80,7 +95,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		for (int i = 0; i < indexFields.size(); i++) {
 			indexList.add(IndexHandler.createIndexField(indexFields.get(i).fieldHandler.fieldName, i));
 		}
-		TableHandler tableHandler = new TableHandler(GetTableName(), connection);
+		TableHandler tableHandler = new TableHandler(GetTableName(), jdbcTemplate);
 		tableHandler.CreateIndex(indexList, index_name, isUnique);
 	}
 }

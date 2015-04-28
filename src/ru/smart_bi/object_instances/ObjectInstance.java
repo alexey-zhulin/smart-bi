@@ -1,12 +1,12 @@
 package ru.smart_bi.object_instances;
 
-import ru.smart_bi.sql_classes.ConnectionHandler;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class ObjectInstance {
-	ConnectionHandler connection;
+	JdbcTemplate jdbcTemplate;
 	
-	public ObjectInstance(ConnectionHandler connection) {
-		this.connection = connection;
+	public ObjectInstance(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 }

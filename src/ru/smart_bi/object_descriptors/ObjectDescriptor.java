@@ -2,6 +2,11 @@ package ru.smart_bi.object_descriptors;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import ru.smart_bi.object_descriptors.MetabaseDescriptor.ObjectClasses;
 import ru.smart_bi.sql_classes.*;
@@ -11,11 +16,11 @@ public class ObjectDescriptor {
 	public String object_name;
 	public String ext_id;
 	public ArrayList<ObjectFieldDescriptor> fields;
-	ConnectionHandler connection;
+	JdbcTemplate jdbcTemplate;
 	int f_class_id;
 	
-	public ObjectDescriptor(ConnectionHandler connection) {
-		this.connection = connection;
+	public ObjectDescriptor(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
 		f_class_id = ObjectClasses.Undefined.getValue();
 		// Инициализируем массив полей
 		fields = new ArrayList<ObjectFieldDescriptor>();
@@ -25,7 +30,7 @@ public class ObjectDescriptor {
 	public void CreateObject() throws SQLException {
 		// Добавим запись в таблицу MetabaseObjects
 		String tableName = "MetabaseObjects";
-		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
+		TableContentHandler tableContent = new TableContentHandler(tableName, jdbcTemplate);
 		ArrayList<FieldContentHandler> fieldsArr = new ArrayList<FieldContentHandler>();
 		fieldsArr.add(FieldContentHandler.createFieldContent("object_name", object_name));
 		fieldsArr.add(FieldContentHandler.createFieldContent("ext_id", ext_id));
@@ -37,11 +42,22 @@ public class ObjectDescriptor {
 	public int GetObjectId(String ext_id) throws SQLException {
 		int id = -1;
 		String queryText = "select object_id from MetabaseObjects where ext_id = ?";
-		ArrayList<FieldContentHandler> paramsArr = new ArrayList<FieldContentHandler>();
-		paramsArr.add(FieldContentHandler.createFieldContent("ext_id", ext_id));
-		ResultSet resultSet = connection.CreateResultSet(queryText, paramsArr);
-		while (resultSet.next()) {
-			id = resultSet.getInt("object_id");
+		List<Integer> valuesList = jdbcTemplate.query(queryText, new Object[]{ext_id},
+				new ResultSetExtractor<List<Integer>>() {
+					@Override
+					public List<Integer> extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+
+						List<Integer> list = new ArrayList<Integer>();
+						while (rs.next()) {
+							list.add(rs.getInt("object_id"));
+						}
+						return list;
+					}
+				});
+
+		for (int curVal: valuesList) {
+			id = curVal;
 		}
 		return id;
 	}

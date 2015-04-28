@@ -3,22 +3,24 @@ package ru.smart_bi.object_descriptors;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import ru.smart_bi.object_descriptors.MetabaseDescriptor.ObjectClasses;
 import ru.smart_bi.sql_classes.*;
 
 public class RubricatorDescriptor extends ObjectDescriptor {
 
-	public RubricatorDescriptor(ConnectionHandler connection) throws SQLException {
-		super(connection);
+	public RubricatorDescriptor(JdbcTemplate jdbcTemplate) throws SQLException {
+		super(jdbcTemplate);
 		f_class_id = ObjectClasses.Rubricator.getValue();
 	}
 	
 	// Процедура создания рубрикатора
-	public void CreateRubricator(ConnectionHandler connection) throws SQLException {
+	public void CreateRubricator() throws SQLException {
 		// Создадим таблицу ревизий
-		SequenceHandler nameSequence = new SequenceHandler("TableName_Seq", connection);
+		SequenceHandler nameSequence = new SequenceHandler("TableName_Seq", jdbcTemplate);
 		String revTableName = DataTablePrefixes.Revisions.getValue() + nameSequence.GetNextVal();;
-		TableHandler tableHandler = new TableHandler(revTableName, connection);
+		TableHandler tableHandler = new TableHandler(revTableName, jdbcTemplate);
 		ArrayList<FieldHandler> fieldsArr = new ArrayList<FieldHandler>();
 		fieldsArr.add(FieldHandler.createField("revision_id", "serial", false, 1));
 		fieldsArr.add(FieldHandler.createField("revision_name", "text", false, 0));
@@ -87,7 +89,7 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		int object_id = GetObjectId(ext_id);
 		// Запишем информацию о созданных таблицах в ObjectTables
 		String tableName = "ObjectTables";
-		TableContentHandler tableContent = new TableContentHandler(tableName, connection);
+		TableContentHandler tableContent = new TableContentHandler(tableName, jdbcTemplate);
 		ArrayList<FieldContentHandler> fieldsContArr = new ArrayList<FieldContentHandler>();
 		fieldsContArr.add(FieldContentHandler.createFieldContent("f_object_id", object_id));
 		fieldsContArr.add(FieldContentHandler.createFieldContent("table_name", valuesTableName));
