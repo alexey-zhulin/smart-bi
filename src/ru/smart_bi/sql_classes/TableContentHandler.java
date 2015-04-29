@@ -66,7 +66,7 @@ public class TableContentHandler {
 	// Функция возвращает, существует ли запись в таблице с указанным значением ключевого поля
 	public boolean ValueExists(ArrayList<FieldContentHandler> primaryKeyArr) throws SQLException {
 		if (primaryKeyArr.size() == 0) return false;
-		String queryText = "select * from " + tableName + "\n";
+		String queryText = "select count(*) from " + tableName + "\n";
 		queryText = queryText + "where\n";
 		for (int i = 0; i < primaryKeyArr.size(); i++) {
 			queryText = queryText + primaryKeyArr.get(i).fieldName + " = ?"

@@ -140,10 +140,10 @@ public class test {
 		try {
 			ApplicationContext context = new ClassPathXmlApplicationContext(
 					"Beans.xml");
-			MetabaseDescriptor metabaseInstance = (MetabaseDescriptor) context
+			MetabaseDescriptor metabaseDescriptor = (MetabaseDescriptor) context
 					.getBean("metabaseDescriptor");
-			if (metabaseInstance.getRecreateMetabase()) {
-				JdbcTemplate jdbcTemplate = metabaseInstance.getJdbcTemplate();
+			JdbcTemplate jdbcTemplate = metabaseDescriptor.getJdbcTemplate();
+			if (metabaseDescriptor.getRecreateMetabase()) {
 				CreateObjects(jdbcTemplate);
 			}
 			((ConfigurableApplicationContext)context).close();
