@@ -29,14 +29,14 @@ public class DictionaryLoaderFromText extends DictionaryLoader implements IDicti
 	
 	@Override
 	public ResultSet getData() throws Exception {
-		// ѕредварительно отсортируем структуру загрузки (headers) в соответствии с позицией в источнике (positionInSource)
+		// Предварительно отсортируем структуру загрузки (headers) в соответствии с позицией в источнике (positionInSource)
 		HeadersSorter();
 		MockResultSet mockResultSet = new MockResultSet("textResultSet");
 		// заполним структуру
 		for (int i = 0; i < headers.size(); i++) {
 			mockResultSet.addColumn(headers.get(i).linkedField.fieldHandler.fieldName);
 		}
-		// ќпределим кодировку
+		// Определим кодировку
 		if (encoding == null) {
 			encoding = ENCODING_UTF_8;
 		}
@@ -87,7 +87,7 @@ public class DictionaryLoaderFromText extends DictionaryLoader implements IDicti
 						rowData.add(Boolean.parseBoolean(sentence.next()));
 						converted = true;
 					}
-					// ≈сли не определили типизацию - добавим как строку
+					// Если не определили типизацию - добавим как строку
 					if (!converted) {
 						rowData.add(value);
 					}

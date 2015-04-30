@@ -105,8 +105,8 @@ public class test {
 		measure_units.CreateIndexForFields(indexFields, "idx_units_code_1c",
 				true);
 		// Загрузим данные
-		// String fileName = "E:\\tmp\\Книга1.csv";
-		// LoadDictionary(jdbcTemplate, measure_units, fileName, false);
+		String fileName = "E:\\tmp\\Книга1.csv";
+		LoadDictionary(jdbcTemplate, measure_units, fileName, false);
 		// String fileName = "E:\\tmp\\data_for_units.txt";
 		// LoadDictionary(jdbcTemplate, measure_units, fileName, true);
 		// Каталог показателей "Динамика продаж номенклатуры"
