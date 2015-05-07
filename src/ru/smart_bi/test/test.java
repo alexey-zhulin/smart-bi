@@ -1,4 +1,4 @@
-package ru.smart_bi.business_objects;
+package ru.smart_bi.test;
 
 import java.time.Duration;
 import java.time.Instant;
