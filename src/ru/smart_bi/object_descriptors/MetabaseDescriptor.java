@@ -279,7 +279,7 @@ public class MetabaseDescriptor {
 		fieldsArr
 				.add(FieldHandler.createField("object_name", "text", false, 0));
 		fieldsArr
-				.add(FieldHandler.createField("ext_id", "char(100)", false, 0));
+				.add(FieldHandler.createField("ext_id", "varchar(100)", false, 0));
 		String tableComment = "Metabase object list";
 		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Создадим constraint

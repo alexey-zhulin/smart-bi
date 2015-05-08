@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import ru.smart_bi.object_descriptors.MetabaseDescriptor;
 
 public class MainForm extends TemplateFrame {

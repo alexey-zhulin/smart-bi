@@ -18,7 +18,7 @@ public class ObjectDescriptor {
 	public Object ext_id;
 	public ArrayList<ObjectFieldDescriptor> fields;
 	JdbcTemplate jdbcTemplate;
-	int f_class_id;
+	public int f_class_id;
 	
 	public ObjectDescriptor(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
@@ -73,6 +73,10 @@ public class ObjectDescriptor {
 		}
 		// Если мы здесь - значит ничего не нашли
 		return null;
+	}
+	
+	public String toString() {
+		return object_name + " [" + ext_id + "]";
 	}
 	
 	// Энумератор для наименования префикса таблиц с данными
