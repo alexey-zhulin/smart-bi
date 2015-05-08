@@ -42,7 +42,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		tableHandler.CreateTable(fieldsArr, tableComment);
 		// Запишем базовые параметры объекта в таблицу MetabaseObjects
 		CreateObject();
-		int object_id = GetObjectId(ext_id);
+		//int object_id = GetObjectId((String) ext_id);
 		// Запишем информацию о созданной таблице в ObjectTables
 		String tableName = "ObjectTables";
 		TableContentHandler tableContent = new TableContentHandler(tableName, jdbcTemplate);
@@ -69,7 +69,7 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 	public String GetTableName() throws SQLException {
 		String tableName = "";
 		String queryText = "select table_name from ObjectTables where f_object_id = ?";
-		List<String> tableList = jdbcTemplate.query(queryText, new Object[]{GetObjectId(ext_id)},
+		List<String> tableList = jdbcTemplate.query(queryText, new Object[]{GetObjectId((String) ext_id)},
 				new ResultSetExtractor<List<String>>() {
 					@Override
 					public List<String> extractData(ResultSet rs)

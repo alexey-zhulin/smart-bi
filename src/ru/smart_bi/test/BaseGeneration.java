@@ -16,13 +16,14 @@ import ru.smart_bi.data_loader_descriptors.LoadStructure;
 import ru.smart_bi.data_loader_descriptors.LoadStructure.FieldTypes;
 import ru.smart_bi.data_loaders.DictionaryLoaderFromText;
 import ru.smart_bi.object_descriptors.DictionaryDescriptor;
+import ru.smart_bi.object_descriptors.FolderDescriptor;
 import ru.smart_bi.object_descriptors.MetabaseDescriptor;
 import ru.smart_bi.object_descriptors.ObjectFieldDescriptor;
 import ru.smart_bi.object_descriptors.RubricatorDescriptor;
 import ru.smart_bi.object_instances.DictionaryInstance;
 import ru.smart_bi.sql_classes.FieldHandler;
 
-public class test {
+public class BaseGeneration {
 
 	// Процедура загрузки единиц измерения
 	static void LoadDictionary(JdbcTemplate jdbcTemplate, DictionaryDescriptor dictionaryDescriptor, String fileName,
@@ -58,10 +59,17 @@ public class test {
 	static void CreateObjects(JdbcTemplate jdbcTemplate) throws Exception {
 		Logger log = Logger.getRootLogger();
 		log.info("Creating objects...");
+		// Папка "Bases"
+		FolderDescriptor folderBase = new FolderDescriptor(jdbcTemplate);
+		folderBase.object_name = "Base";
+		folderBase.ext_id = "FOLDER_BASE";
+		folderBase.CreateFolder();
+		int folderBaseId = (int) folderBase.object_id;
 		// Справочник "Группы номенклатуры"
 		DictionaryDescriptor goods_groups = new DictionaryDescriptor(jdbcTemplate);
 		goods_groups.object_name = "Группы номенклатуры";
 		goods_groups.ext_id = "GROUP_OF_GOODS";
+		goods_groups.parent_object_id = folderBaseId;
 		ObjectFieldDescriptor code_1cField = ObjectFieldDescriptor
 				.createField(
 						"Код 1С",
@@ -82,6 +90,7 @@ public class test {
 				jdbcTemplate);
 		measure_units.object_name = "Единицы измерения";
 		measure_units.ext_id = "UNITS";
+		measure_units.parent_object_id = folderBaseId;
 		code_1cField = ObjectFieldDescriptor
 				.createField(
 						"Код 1С",
@@ -105,14 +114,15 @@ public class test {
 		measure_units.CreateIndexForFields(indexFields, "idx_units_code_1c",
 				true);
 		// Загрузим данные
-		String fileName = "E:\\tmp\\Книга1.csv";
-		LoadDictionary(jdbcTemplate, measure_units, fileName, false);
+		// String fileName = "E:\\tmp\\Книга1.csv";
+		// LoadDictionary(jdbcTemplate, measure_units, fileName, false);
 		// String fileName = "E:\\tmp\\data_for_units.txt";
 		// LoadDictionary(jdbcTemplate, measure_units, fileName, true);
 		// Каталог показателей "Динамика продаж номенклатуры"
 		RubricatorDescriptor rubricator = new RubricatorDescriptor(jdbcTemplate);
 		rubricator.object_name = "Динамика продаж номенклатуры";
 		rubricator.ext_id = "SALE_DINAMICS";
+		rubricator.parent_object_id = folderBaseId;
 		// Добавим разрез по группам номенклатуры
 		rubricator.fields
 				.add(ObjectFieldDescriptor.createField(
@@ -144,6 +154,7 @@ public class test {
 					.getBean("metabaseDescriptor");
 			JdbcTemplate jdbcTemplate = metabaseDescriptor.getJdbcTemplate();
 			if (metabaseDescriptor.getRecreateMetabase()) {
+				metabaseDescriptor.CreateMetabase();
 				CreateObjects(jdbcTemplate);
 			}
 			((ConfigurableApplicationContext)context).close();

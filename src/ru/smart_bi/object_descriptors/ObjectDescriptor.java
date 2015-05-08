@@ -12,9 +12,10 @@ import ru.smart_bi.object_descriptors.MetabaseDescriptor.ObjectClasses;
 import ru.smart_bi.sql_classes.*;
 
 public class ObjectDescriptor {
-	public int object_id;
-	public String object_name;
-	public String ext_id;
+	public Object object_id;
+	public Object parent_object_id;
+	public Object object_name;
+	public Object ext_id;
 	public ArrayList<ObjectFieldDescriptor> fields;
 	JdbcTemplate jdbcTemplate;
 	int f_class_id;
@@ -35,7 +36,10 @@ public class ObjectDescriptor {
 		fieldsArr.add(FieldContentHandler.createFieldContent("object_name", object_name));
 		fieldsArr.add(FieldContentHandler.createFieldContent("ext_id", ext_id));
 		fieldsArr.add(FieldContentHandler.createFieldContent("f_class_id", f_class_id));
+		fieldsArr.add(FieldContentHandler.createFieldContent("parent_object_id", parent_object_id));
 		tableContent.AddRecord(fieldsArr);
+		// Установим значение идентификатора
+		object_id = GetObjectId((String) ext_id);
 	}
 	
 	// Процедура получения идентификатора объекта по внешнему идентификатору

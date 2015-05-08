@@ -18,17 +18,26 @@ public class MetabaseDescriptor {
 	private boolean recreateMetabase;
 	private DataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
+	private String repositoryName;
+
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
+	}
+
+	public String getRepositoryName() {
+		return this.repositoryName;
+	}
 
 	public void setRecreateMetabase(boolean recreateMetabase) {
 		this.recreateMetabase = recreateMetabase;
 	}
-	
-	public JdbcTemplate getJdbcTemplate() {
-		return this.jdbcTemplate;
-	}
 
 	public boolean getRecreateMetabase() {
 		return this.recreateMetabase;
+	}
+	
+	public JdbcTemplate getJdbcTemplate() {
+		return this.jdbcTemplate;
 	}
 
 	// Процедура закрытия подключения

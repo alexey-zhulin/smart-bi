@@ -86,7 +86,7 @@ public class RubricatorDescriptor extends ObjectDescriptor {
 		tableHandler.CreateIndex(indexfieldsArr, "idx_calendar_level", true);
 		// Запишем базовые параметры объекта в таблицу MetabaseObjects
 		CreateObject();
-		int object_id = GetObjectId(ext_id);
+		//int object_id = GetObjectId((String) ext_id);
 		// Запишем информацию о созданных таблицах в ObjectTables
 		String tableName = "ObjectTables";
 		TableContentHandler tableContent = new TableContentHandler(tableName, jdbcTemplate);
