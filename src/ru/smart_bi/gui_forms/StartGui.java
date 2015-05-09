@@ -1,4 +1,4 @@
-package ru.smart_bi.gui;
+package ru.smart_bi.gui_forms;
 
 public class StartGui {
 
