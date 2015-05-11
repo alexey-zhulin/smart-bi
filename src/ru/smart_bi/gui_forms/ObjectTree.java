@@ -46,7 +46,8 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 	public ObjectTree(MetabaseDescriptor metabaseDescriptor) {
 		super(new GridLayout(1, 0));
 
-		final String PATH_TO_IMG = "~/projects/Java/smart-bi.git/trunk/img";
+		// final String PATH_TO_IMG = "~/projects/Java/smart-bi.git/trunk/img/";
+		final String PATH_TO_IMG = "D:\\Base\\Java\\smart-bi\\img\\";
 
 		this.metabaseDescriptor = metabaseDescriptor;
 
@@ -60,6 +61,7 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
+			private static final long serialVersionUID = 3824942326828225569L;
 			IconHandler iconHandler = new IconHandler();
 
 			@Override
@@ -68,10 +70,13 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 					boolean isLeaf, int row, boolean focused) {
 				java.awt.Component c = super.getTreeCellRendererComponent(tree,
 						value, selected, expanded, isLeaf, row, focused);
-				if (value instanceof ObjectDescriptor)
-					setIcon(iconHandler.createImageIcon(PATH_TO_IMG
-							+ ((ObjectDescriptor) value).f_class_id + ".png",
+				if (((DefaultMutableTreeNode) value).getUserObject() instanceof ObjectDescriptor) {
+					String iconPath = PATH_TO_IMG
+							+ ((ObjectDescriptor) ((DefaultMutableTreeNode) value)
+									.getUserObject()).f_class_id + ".png";
+					setIcon(iconHandler.createImageIcon(iconPath,
 							value.toString()));
+				}
 				return c;
 			}
 		});
