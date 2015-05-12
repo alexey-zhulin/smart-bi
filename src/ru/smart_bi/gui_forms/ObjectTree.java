@@ -3,22 +3,16 @@ package ru.smart_bi.gui_forms;
 import java.awt.GridLayout;
 import java.util.List;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.sun.xml.internal.ws.api.Component;
-
 import ru.smart_bi.object_descriptors.MetabaseDescriptor;
-import ru.smart_bi.object_descriptors.MetabaseDescriptor.ObjectClasses;
 import ru.smart_bi.object_descriptors.ObjectDescriptor;
 import ru.smart_bi.object_instances.MetabaseInstanse;
 import ru.smart_bi.gui_tools.IconHandler;
@@ -68,13 +62,17 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 					boolean isLeaf, int row, boolean focused) {
 				java.awt.Component c = super.getTreeCellRendererComponent(tree,
 						value, selected, expanded, isLeaf, row, focused);
+				String iconPath;
 				if (((DefaultMutableTreeNode) value).getUserObject() instanceof ObjectDescriptor) {
-					String iconPath = PATH_TO_IMG
+					iconPath = PATH_TO_IMG
 							+ ((ObjectDescriptor) ((DefaultMutableTreeNode) value)
 									.getUserObject()).f_class_id + ".png";
-					setIcon(iconHandler.createImageIcon(iconPath,
-							value.toString()));
 				}
+				else {
+					iconPath = PATH_TO_IMG + "base.png";
+				}
+				setIcon(iconHandler.createImageIcon(iconPath,
+						value.toString()));
 				return c;
 			}
 		});

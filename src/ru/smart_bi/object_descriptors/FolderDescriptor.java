@@ -10,7 +10,7 @@ public class FolderDescriptor extends ObjectDescriptor {
 	
 	public FolderDescriptor(JdbcTemplate jdbcTemplate) {
 		super(jdbcTemplate);
-		f_class_id = ObjectClasses.Dictionary.getValue();
+		f_class_id = ObjectClasses.Folder.getValue();
 	}
 	
 	public void CreateFolder() throws SQLException {
