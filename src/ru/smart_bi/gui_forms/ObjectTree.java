@@ -56,6 +56,7 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
 			private static final long serialVersionUID = 3824942326828225569L;
 			IconHandler iconHandler = new IconHandler();
+
 			@Override
 			public java.awt.Component getTreeCellRendererComponent(JTree tree,
 					Object value, boolean selected, boolean expanded,
@@ -67,12 +68,10 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 					iconPath = PATH_TO_IMG
 							+ ((ObjectDescriptor) ((DefaultMutableTreeNode) value)
 									.getUserObject()).f_class_id + ".png";
-				}
-				else {
+				} else {
 					iconPath = PATH_TO_IMG + "base.png";
 				}
-				setIcon(iconHandler.createImageIcon(iconPath,
-						value.toString()));
+				setIcon(iconHandler.createImageIcon(iconPath, value.toString()));
 				return c;
 			}
 		});
@@ -86,8 +85,14 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 
 	@Override
 	public void valueChanged(TreeSelectionEvent arg0) {
-		// TODO Auto-generated method stub
-
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+				.getLastSelectedPathComponent();
+		if (node == null)
+			return;
+		Object nodeInfo = node.getUserObject();
+		if (nodeInfo instanceof ObjectDescriptor) {
+			// TODO: Create list view filling
+		}
 	}
 
 }
