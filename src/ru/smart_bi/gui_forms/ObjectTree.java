@@ -46,8 +46,7 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 	public ObjectTree(MetabaseDescriptor metabaseDescriptor) {
 		super(new GridLayout(1, 0));
 
-		// final String PATH_TO_IMG = "~/projects/Java/smart-bi.git/trunk/img/";
-		final String PATH_TO_IMG = "D:\\Base\\Java\\smart-bi\\img\\";
+		final String PATH_TO_IMG = "/img/";
 
 		this.metabaseDescriptor = metabaseDescriptor;
 
@@ -63,7 +62,6 @@ public class ObjectTree extends JPanel implements TreeSelectionListener {
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
 			private static final long serialVersionUID = 3824942326828225569L;
 			IconHandler iconHandler = new IconHandler();
-
 			@Override
 			public java.awt.Component getTreeCellRendererComponent(JTree tree,
 					Object value, boolean selected, boolean expanded,
