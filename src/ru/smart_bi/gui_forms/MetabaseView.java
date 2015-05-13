@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -28,7 +27,6 @@ public class MetabaseView extends JPanel implements TreeSelectionListener {
 	private static final long serialVersionUID = 217800118485599875L;
 	private JTree tree;
 	private JTable table;
-	private JMenuBar menuBar;
 	private MetabaseDescriptor metabaseDescriptor;
 
 	void CreateNodes(DefaultMutableTreeNode currentNode,
