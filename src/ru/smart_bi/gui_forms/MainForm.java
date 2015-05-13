@@ -38,9 +38,9 @@ public class MainForm extends TemplateFrame {
 		mainForm.setTitle(APPLICATION_NAME + " ("
 				+ mainForm.metabaseDescriptor.getRepositoryName() + ")");
 		// Create and set up the content pane.
-		ObjectTree objectTree = new ObjectTree(mainForm.metabaseDescriptor);
-		objectTree.setOpaque(true);
-		mainForm.setContentPane(objectTree);
+		MetabaseView metabaseView = new MetabaseView(mainForm.metabaseDescriptor);
+		metabaseView.setOpaque(true);
+		mainForm.setContentPane(metabaseView);
 		mainForm.pack();
 
 		mainForm.addWindowListener(new WindowAdapter() {
@@ -56,6 +56,7 @@ public class MainForm extends TemplateFrame {
 		if (!LoadFormParameters(mainForm))
 			InitSizeValues(mainForm);
 		mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainForm.setJMenuBar(new MainMenu());
 
 		mainForm.setVisible(true);
 	}
