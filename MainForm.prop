@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #Saved values for "ru.smart_bi.gui_forms.MainForm"
 #Tue May 12 18:01:39 YEKT 2015
 height=544
@@ -5,3 +6,12 @@ width=1027
 yPos=159
 state=0
 xPos=177
+=======
+#Saved values for "ru.smart_bi.gui_forms.MainForm"
+#Wed May 13 18:21:25 YEKT 2015
+height=744
+width=1100
+yPos=83
+state=0
+xPos=484
+>>>>>>> origin/master

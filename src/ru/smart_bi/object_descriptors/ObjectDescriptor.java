@@ -19,6 +19,7 @@ public class ObjectDescriptor {
 	public ArrayList<ObjectFieldDescriptor> fields;
 	JdbcTemplate jdbcTemplate;
 	public int f_class_id;
+	public String class_name;
 	
 	public ObjectDescriptor(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;

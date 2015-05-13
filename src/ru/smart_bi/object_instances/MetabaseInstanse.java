@@ -30,6 +30,7 @@ List<ObjectDescriptor> FillObjectList(ResultSet rs) throws SQLException {
 			objectDescriptor.object_name = rs.getString("object_name");
 			objectDescriptor.ext_id = rs.getString("ext_id");
 			objectDescriptor.f_class_id = rs.getInt("f_class_id");
+			objectDescriptor.class_name = rs.getString("class_name");
 			list.add(objectDescriptor);
 		}
 		return list;
@@ -38,7 +39,7 @@ List<ObjectDescriptor> FillObjectList(ResultSet rs) throws SQLException {
 	public List<ObjectDescriptor> GetChildrenObjects(
 			ObjectDescriptor parentObjectDescriptor) {
 		if (parentObjectDescriptor == null) {
-			String queryText = "select * from metabaseobjects where parent_object_id is null";
+			String queryText = "select mo.*, oc.class_name from metabaseobjects mo, objectclasses oc where mo.parent_object_id is null and mo.f_class_id = oc.class_id";
 			List<ObjectDescriptor> objectList = metabaseDescriptor
 					.getJdbcTemplate().query(queryText,
 							new ResultSetExtractor<List<ObjectDescriptor>>() {
@@ -52,7 +53,7 @@ List<ObjectDescriptor> FillObjectList(ResultSet rs) throws SQLException {
 							});
 			return objectList;
 		} else {
-			String queryText = "select * from metabaseobjects where parent_object_id = ?";
+			String queryText = "select mo.*, oc.class_name from metabaseobjects mo, objectclasses oc where mo.parent_object_id = ? and mo.f_class_id = oc.class_id";
 			List<ObjectDescriptor> objectList = metabaseDescriptor
 					.getJdbcTemplate().query(queryText,
 							new Object[] { parentObjectDescriptor.object_id },
