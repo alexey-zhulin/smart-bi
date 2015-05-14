@@ -15,17 +15,45 @@ public class MainMenu extends JMenuBar {
 	public MainMenu() {
 		super();
 		// Create main menu
-		JMenu fileMenu = new JMenu("File");
-		fileMenu.setMnemonic(KeyEvent.VK_F);
-		this.add(fileMenu);
-		JMenuItem exitMenuItem = new JMenuItem("Exit");
-		exitMenuItem.addActionListener(new ActionListener() {
+		// FILE
+		JMenu menu = new JMenu("File");
+		menu.setMnemonic(KeyEvent.VK_F);
+		this.add(menu);
+		JMenuItem menuItem;
+		//Open repository
+		menuItem = new JMenuItem("Open repository");
+		menuItem.setMnemonic(KeyEvent.VK_O);
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				// TODO: Create Open repository method
+			}
+
+		});
+		menu.add(menuItem);
+		//Exit
+		menuItem = new JMenuItem("Exit");
+		menuItem.setMnemonic(KeyEvent.VK_X);
+		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				System.exit(0);
 			}
 
 		});
-		fileMenu.add(exitMenuItem);
+		menu.add(menuItem);
+		// HELP
+		menu = new JMenu("Help");
+		menu.setMnemonic(KeyEvent.VK_H);
+		this.add(menu);
+		// About
+		menuItem = new JMenuItem("About");
+		menuItem.setMnemonic(KeyEvent.VK_A);
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				// TODO: Show about window
+			}
+
+		});
+		menu.add(menuItem);
 	}
 
 }

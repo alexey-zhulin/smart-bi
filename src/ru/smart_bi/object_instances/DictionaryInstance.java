@@ -22,7 +22,7 @@ public class DictionaryInstance extends ObjectInstance {
 	}
 
 	// Функция возвращает курсор с данными справочника
-	public ResultSet GetDictionaryData() throws SQLException {
+	public ArrayList<DictionaryItem> GetDictionaryData(Object parent_object_id) throws SQLException {
 		String dictTableName = dictionaryDescriptor.GetTableName();
 		ArrayList<ObjectFieldDescriptor> fieldsArr = dictionaryDescriptor.fields;
 		// Сформируем скрипт, для получения данных объекта
@@ -35,15 +35,30 @@ public class DictionaryInstance extends ObjectInstance {
 			}
 		}
 		queryText = queryText + "from " + dictTableName + "\n";
-		ResultSet resultSet = jdbcTemplate.query(queryText,
-				new ResultSetExtractor<ResultSet>() {
+		if (parent_object_id == null)
+			queryText = queryText + "where parent_object_id is null";
+		else
+			queryText = queryText + "where parent_object_id = " + parent_object_id;
+			
+		ArrayList<DictionaryItem> dictionaryItems = jdbcTemplate.query(queryText,
+				new ResultSetExtractor<ArrayList<DictionaryItem>>() {
 					@Override
-					public ResultSet extractData(ResultSet rs)
+					public ArrayList<DictionaryItem> extractData(ResultSet rs)
 							throws SQLException, DataAccessException {
-						return rs;
+						ArrayList<DictionaryItem> dictionaryItems = new ArrayList<DictionaryItem>();
+						// Fill dictionary items from result set
+						rs.first();
+						while (rs.next()) {
+							DictionaryItem dictionaryItem = new DictionaryItem(dictionaryDescriptor);
+							// fill current dictionary item
+							// add item to result
+							dictionaryItems.add(dictionaryItem);
+						}
+						rs.close();
+						return dictionaryItems;
 					}
 				});
-		return resultSet;
+		return dictionaryItems;
 	}
 
 	// Процедура загружает данные в справочник
