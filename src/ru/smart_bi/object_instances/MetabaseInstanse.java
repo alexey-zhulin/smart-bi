@@ -38,6 +38,10 @@ List<ObjectDescriptor> FillObjectList(ResultSet rs) throws SQLException {
 
 	public List<ObjectDescriptor> GetChildrenObjects(
 			ObjectDescriptor parentObjectDescriptor) {
+		if (metabaseDescriptor == null) {
+			List<ObjectDescriptor> objectList = new ArrayList<ObjectDescriptor>();
+			return objectList;
+		}
 		if (parentObjectDescriptor == null) {
 			String queryText = "select mo.*, oc.class_name from metabaseobjects mo, objectclasses oc where mo.parent_object_id is null and mo.f_class_id = oc.class_id";
 			List<ObjectDescriptor> objectList = metabaseDescriptor
