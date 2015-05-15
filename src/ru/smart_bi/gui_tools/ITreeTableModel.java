@@ -2,7 +2,7 @@ package ru.smart_bi.gui_tools;
 
 import javax.swing.tree.TreeModel;
 
-public interface TreeTableModel extends TreeModel {
+public interface ITreeTableModel extends TreeModel {
     /**
      * Returns the number of available column.
      */

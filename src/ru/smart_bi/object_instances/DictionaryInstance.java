@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import ru.smart_bi.data_loader_descriptors.IDictionaryLoader;
 import ru.smart_bi.data_loader_descriptors.LoadParams;
 import ru.smart_bi.object_descriptors.DictionaryDescriptor;
+import ru.smart_bi.object_descriptors.ObjectDescriptor;
 import ru.smart_bi.object_descriptors.ObjectFieldDescriptor;
 import ru.smart_bi.sql_classes.FieldContentHandler;
 import ru.smart_bi.sql_classes.TableContentHandler;
@@ -29,16 +30,16 @@ public class DictionaryInstance extends ObjectInstance {
 		String queryText = "select ";
 		for (int i = 0; i < fieldsArr.size(); i++) {
 			if (i == (fieldsArr.size() - 1)) {
-				queryText = queryText + fieldsArr.get(i).fieldHandler + ", ";
+				queryText = queryText + fieldsArr.get(i).fieldHandler.fieldName + "\n";
 			} else {
-				queryText = queryText + fieldsArr.get(i).fieldHandler + "\n";
+				queryText = queryText + fieldsArr.get(i).fieldHandler.fieldName + ", ";
 			}
 		}
 		queryText = queryText + "from " + dictTableName + "\n";
-		if (parent_object_id == null)
-			queryText = queryText + "where parent_object_id is null";
+		if (parent_object_id instanceof ObjectDescriptor)
+			queryText = queryText + "where parent_id = " + ((ObjectDescriptor) parent_object_id).object_id;
 		else
-			queryText = queryText + "where parent_object_id = " + parent_object_id;
+			queryText = queryText + "where parent_id is null";
 			
 		ArrayList<DictionaryItem> dictionaryItems = jdbcTemplate.query(queryText,
 				new ResultSetExtractor<ArrayList<DictionaryItem>>() {
@@ -47,10 +48,14 @@ public class DictionaryInstance extends ObjectInstance {
 							throws SQLException, DataAccessException {
 						ArrayList<DictionaryItem> dictionaryItems = new ArrayList<DictionaryItem>();
 						// Fill dictionary items from result set
-						rs.first();
 						while (rs.next()) {
 							DictionaryItem dictionaryItem = new DictionaryItem(dictionaryDescriptor);
 							// fill current dictionary item
+							for (int i = 0; i < dictionaryItem.fields.size(); i++) {
+								FieldContentHandler currentField = dictionaryItem.fields.get(i);
+								currentField.fieldValue = rs.getObject(i+1);
+								dictionaryItem.fields.set(i, currentField);
+							}
 							// add item to result
 							dictionaryItems.add(dictionaryItem);
 						}

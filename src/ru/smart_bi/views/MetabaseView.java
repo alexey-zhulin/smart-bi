@@ -1,7 +1,9 @@
-package ru.smart_bi.gui_forms;
+package ru.smart_bi.views;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -13,12 +15,17 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import ru.smart_bi.object_descriptors.DictionaryDescriptor;
 import ru.smart_bi.object_descriptors.MetabaseDescriptor;
+import ru.smart_bi.object_descriptors.MetabaseDescriptor.ObjectClasses;
 import ru.smart_bi.object_descriptors.ObjectDescriptor;
+import ru.smart_bi.object_instances.DictionaryInstance;
 import ru.smart_bi.object_instances.MetabaseInstanse;
 import ru.smart_bi.data_models.MetabaseTableModel;
+import ru.smart_bi.gui_forms.DictionaryForm;
 import ru.smart_bi.gui_tools.IconHandler;
 
 public class MetabaseView extends JPanel implements TreeSelectionListener {
@@ -42,6 +49,20 @@ public class MetabaseView extends JPanel implements TreeSelectionListener {
 		}
 	}
 
+	// Procedure which handle double click on tree
+	private void DoubleClickHandler(TreePath selPath) throws Exception {
+		DefaultMutableTreeNode selectedNode =
+ 			   (DefaultMutableTreeNode) ((DefaultMutableTreeNode)selPath.getLastPathComponent());
+		if (selectedNode.getUserObject() instanceof ObjectDescriptor) {
+			ObjectDescriptor selectedObject = (ObjectDescriptor) selectedNode.getUserObject();
+			if (selectedObject.f_class_id == ObjectClasses.Dictionary.getValue()) {
+				DictionaryInstance dictionaryInstance = new DictionaryInstance(metabaseDescriptor.getJdbcTemplate());
+				dictionaryInstance.dictionaryDescriptor = new DictionaryDescriptor(metabaseDescriptor.getJdbcTemplate()).GetDictionaryDescriptor(selectedObject);
+				DictionaryForm.ShowForm(dictionaryInstance);
+			}
+		}
+	}
+	
 	public MetabaseView(MetabaseDescriptor metabaseDescriptor) {
 		super(new GridLayout(1, 0));
 
@@ -50,14 +71,41 @@ public class MetabaseView extends JPanel implements TreeSelectionListener {
 		this.metabaseDescriptor = metabaseDescriptor;
 
 		// Create the nodes.
-		DefaultMutableTreeNode top = new DefaultMutableTreeNode(
-				this.metabaseDescriptor.getRepositoryName());
+		DefaultMutableTreeNode top = null;
+		if (metabaseDescriptor != null) 
+			top = new DefaultMutableTreeNode(
+					this.metabaseDescriptor.getRepositoryName());
+		else
+			top = new DefaultMutableTreeNode(
+					"metabaseDescriptor is empty");
+			
 		CreateNodes(top, null);
 
+		
+		
 		// Create a tree that allows one selection at a time.
 		tree = new JTree(top);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
+		// Define double-click listener
+		MouseAdapter ml = new MouseAdapter() {
+		    public void mousePressed(MouseEvent e) {
+		        int selRow = tree.getRowForLocation(e.getX(), e.getY());
+		        TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+		        if(selRow != -1) {
+		            if(e.getClickCount() == 2) { // double click
+		            	try {
+							DoubleClickHandler(selPath);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+		            }
+		        }
+		    }
+		};
+		tree.addMouseListener(ml);
 
 		// Define cell render for the tree
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
@@ -76,7 +124,10 @@ public class MetabaseView extends JPanel implements TreeSelectionListener {
 							+ ((ObjectDescriptor) ((DefaultMutableTreeNode) value)
 									.getUserObject()).f_class_id + ".png";
 				} else {
-					iconPath = PATH_TO_IMG + "base.png";
+					if (metabaseDescriptor != null)
+						iconPath = PATH_TO_IMG + "base.png";
+					else
+						iconPath = PATH_TO_IMG + "error.png";
 				}
 				setIcon(iconHandler.createImageIcon(iconPath, value.toString()));
 				return c;

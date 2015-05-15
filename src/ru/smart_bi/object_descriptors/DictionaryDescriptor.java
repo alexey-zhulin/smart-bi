@@ -98,4 +98,15 @@ public class DictionaryDescriptor extends ObjectDescriptor {
 		TableHandler tableHandler = new TableHandler(GetTableName(), jdbcTemplate);
 		tableHandler.CreateIndex(indexList, index_name, isUnique);
 	}
+	
+	public DictionaryDescriptor GetDictionaryDescriptor(ObjectDescriptor objectDescriptor) throws Exception {
+		if (objectDescriptor == null)
+			return null;
+		DictionaryDescriptor dictionaryDescriptor = new DictionaryDescriptor(jdbcTemplate);
+		dictionaryDescriptor.object_id = objectDescriptor.object_id;
+		dictionaryDescriptor.object_name = objectDescriptor.object_name;
+		dictionaryDescriptor.ext_id = objectDescriptor.ext_id;
+		// Add specific to dictionary fields
+		return dictionaryDescriptor;
+	}
 }

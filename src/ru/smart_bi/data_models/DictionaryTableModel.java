@@ -5,13 +5,13 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import ru.smart_bi.gui_tools.AbstractTreeTableModel;
-import ru.smart_bi.gui_tools.TreeTableModel;
+import ru.smart_bi.gui_tools.ITreeTableModel;
 import ru.smart_bi.object_descriptors.DictionaryDescriptor;
 import ru.smart_bi.object_instances.DictionaryInstance;
 import ru.smart_bi.object_instances.DictionaryItem;
 
 public class DictionaryTableModel extends AbstractTreeTableModel implements
-		TreeTableModel {
+		ITreeTableModel {
 
 	private String[] columnNames;
 	private DictionaryInstance dictionaryInstance;
@@ -21,10 +21,10 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 	//
 
 	public int getChildCount(Object parent_object_id) {
-		DictionaryItem[] children;
+		Object[] children;
 		int childrenCount = 0;
 		try {
-			children = (DictionaryItem[]) dictionaryInstance.GetDictionaryData(parent_object_id)
+			children = dictionaryInstance.GetDictionaryData(parent_object_id)
 					.toArray();
 			childrenCount =  (children == null) ? 0 : children.length;
 		} catch (SQLException e) {
@@ -39,14 +39,13 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 		try {
 			dictionaryItem = dictionaryInstance.GetDictionaryData(parent_object_id).get(i);
 		} catch (SQLException e) {
-			Logger log = Logger.getRootLogger();
-			log.error(e.getStackTrace());
+			//throw e;
 		}
 		return dictionaryItem;
 	}
 
 	public DictionaryTableModel(DictionaryInstance dictionaryInstance) {
-		this.root = null;
+		this.root = dictionaryInstance.dictionaryDescriptor.object_name;
 		this.dictionaryInstance = dictionaryInstance;
 		DictionaryDescriptor dictionaryDescriptor = dictionaryInstance.dictionaryDescriptor;
 		// Define column names base on dictionaryDescriptor
@@ -72,20 +71,25 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 
 	@Override
 	public Object getValueAt(Object node, int column) {
-		// TODO Auto-generated method stub
+		if (node instanceof DictionaryItem) {
+			return ((DictionaryItem) node).fields.get(column).fieldValue;
+		}
+		else {
+			if (column == 0)
+				return node;
+		}
 		return null;
 	}
 
 	@Override
-	public int getIndexOfChild(Object arg0, Object arg1) {
+	public int getIndexOfChild(Object node, Object arg1) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public boolean isLeaf(Object arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isLeaf(Object node) {
+		return (getChildCount(node) == 0);
 	}
 
 }
