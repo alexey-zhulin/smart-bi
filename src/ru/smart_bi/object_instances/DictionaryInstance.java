@@ -24,6 +24,8 @@ public class DictionaryInstance extends ObjectInstance {
 
 	// Функция возвращает курсор с данными справочника
 	public ArrayList<DictionaryItem> GetDictionaryData(Object parent_object_id) throws SQLException {
+		//ArrayList<DictionaryItem> dictionaryItems = new ArrayList<DictionaryItem>();
+		//return dictionaryItems;
 		String dictTableName = dictionaryDescriptor.GetTableName();
 		ArrayList<ObjectFieldDescriptor> fieldsArr = dictionaryDescriptor.fields;
 		// Сформируем скрипт, для получения данных объекта

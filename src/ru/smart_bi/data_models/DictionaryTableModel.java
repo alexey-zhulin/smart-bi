@@ -14,6 +14,7 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 		ITreeTableModel {
 
 	private String[] columnNames;
+	//private Class[] columnTypes;
 	private DictionaryInstance dictionaryInstance;
 
 	//
@@ -26,22 +27,25 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 		try {
 			children = dictionaryInstance.GetDictionaryData(parent_object_id)
 					.toArray();
-			childrenCount =  (children == null) ? 0 : children.length;
+			childrenCount = (children == null) ? 0 : children.length;
 		} catch (SQLException e) {
 			Logger log = Logger.getRootLogger();
 			log.error(e.getStackTrace());
 		}
 		return childrenCount;
 	}
-
-	public DictionaryItem getChild(Object parent_object_id, int i) {
-		DictionaryItem dictionaryItem = null;
+	
+	public Object getChild(Object parent_object_id, int i) {
+		Object[] children;
 		try {
-			dictionaryItem = dictionaryInstance.GetDictionaryData(parent_object_id).get(i);
+			children = dictionaryInstance.GetDictionaryData(parent_object_id)
+					.toArray();
+			return children[i];
 		} catch (SQLException e) {
-			//throw e;
+			Logger log = Logger.getRootLogger();
+			log.error(e.getStackTrace());
 		}
-		return dictionaryItem;
+		return null;
 	}
 
 	public DictionaryTableModel(DictionaryInstance dictionaryInstance) {
@@ -50,15 +54,15 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 		DictionaryDescriptor dictionaryDescriptor = dictionaryInstance.dictionaryDescriptor;
 		// Define column names base on dictionaryDescriptor
 		columnNames = new String[dictionaryDescriptor.fields.size()];
+		//columnTypes = new Class[dictionaryDescriptor.fields.size()];
 		for (int i = 0; i < dictionaryDescriptor.fields.size(); i++) {
 			columnNames[i] = dictionaryDescriptor.fields.get(i).fieldAlias;
 		}
 	}
 
-
 	//
 	// The TreeTableNode interface
-	
+
 	@Override
 	public int getColumnCount() {
 		return columnNames.length;
@@ -69,27 +73,44 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 		return columnNames[column];
 	}
 
+	public Class getColumnClass(int column) {
+		//return columnTypes[column];
+		if (column == 0)
+			return ITreeTableModel.class;
+		else
+			return String.class;
+	}
+
 	@Override
 	public Object getValueAt(Object node, int column) {
 		if (node instanceof DictionaryItem) {
+			System.out.println("column = " + column + " " + ((DictionaryItem) node).fields.get(column).fieldValue);
 			return ((DictionaryItem) node).fields.get(column).fieldValue;
-		}
-		else {
+		} else {
 			if (column == 0)
 				return node;
 		}
 		return null;
 	}
 
+	/*
 	@Override
-	public int getIndexOfChild(Object node, Object arg1) {
+	public int getIndexOfChild(Object parent, Object child) {
 		// TODO Auto-generated method stub
-		return 0;
+		int index = 0;
+		try {
+			index = dictionaryInstance.GetDictionaryData(parent).indexOf(child);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return index;
 	}
 
 	@Override
 	public boolean isLeaf(Object node) {
 		return (getChildCount(node) == 0);
 	}
+	*/
 
 }

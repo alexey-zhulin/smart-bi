@@ -38,7 +38,9 @@ public class JTreeTable extends JTable {
 
 		// Install the tree editor renderer and editor. 
 		setDefaultRenderer(ITreeTableModel.class, tree); 
-		setDefaultEditor(ITreeTableModel.class, new TreeTableCellEditor());  
+		//setDefaultEditor(ITreeTableModel.class, new TreeTableCellEditor());  
+		//setDefaultRenderer(Object.class, tree); 
+		//setDefaultEditor(Object.class, new TreeTableCellEditor());  
 
 		setShowGrid(false);
 		setIntercellSpacing(new Dimension(0, 0)); 	        
