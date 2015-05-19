@@ -1,6 +1,10 @@
 package ru.smart_bi.data_models;
 
+import java.awt.Component;
 import java.sql.SQLException;
+
+import javax.swing.JTree;
+import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.log4j.Logger;
 
@@ -84,7 +88,6 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 	@Override
 	public Object getValueAt(Object node, int column) {
 		if (node instanceof DictionaryItem) {
-			System.out.println("column = " + column + " " + ((DictionaryItem) node).fields.get(column).fieldValue);
 			return ((DictionaryItem) node).fields.get(column).fieldValue;
 		} else {
 			if (column == 0)
@@ -92,25 +95,5 @@ public class DictionaryTableModel extends AbstractTreeTableModel implements
 		}
 		return null;
 	}
-
-	/*
-	@Override
-	public int getIndexOfChild(Object parent, Object child) {
-		// TODO Auto-generated method stub
-		int index = 0;
-		try {
-			index = dictionaryInstance.GetDictionaryData(parent).indexOf(child);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return index;
-	}
-
-	@Override
-	public boolean isLeaf(Object node) {
-		return (getChildCount(node) == 0);
-	}
-	*/
 
 }

@@ -36,7 +36,7 @@ public class JTreeTable extends JTable {
 		// Make the tree and table row heights the same. 
 		tree.setRowHeight(getRowHeight());
 
-		// Install the tree editor renderer and editor. 
+		// Install the tree renderer and editor. 
 		setDefaultRenderer(ITreeTableModel.class, tree); 
 		//setDefaultEditor(ITreeTableModel.class, new TreeTableCellEditor());  
 		//setDefaultRenderer(Object.class, tree); 

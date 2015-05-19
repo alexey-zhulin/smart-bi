@@ -15,4 +15,11 @@ public class DictionaryItem {
 			fields.add(FieldContentHandler.createFieldContent(fieldHandler.fieldAlias, null));
 		}
 	}
+	
+	public String toString() {
+		if (fields.size() > 0)
+			return fields.get(0).fieldValue.toString();
+		else
+			return null;
+	}
 }
