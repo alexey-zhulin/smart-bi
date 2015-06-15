@@ -63,7 +63,7 @@ public class MetabaseView extends JPanel implements TreeSelectionListener {
 		}
 	}
 	
-	public MetabaseView(MetabaseDescriptor metabaseDescriptor) {
+	public MetabaseView(final MetabaseDescriptor metabaseDescriptor) {
 		super(new GridLayout(1, 0));
 
 		final String PATH_TO_IMG = "/img/";
